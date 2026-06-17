@@ -16,7 +16,7 @@
       --mint: #ece7dc;
       --peach: #f7f4ee;
       --shadow: none;
-      --reader-size: 1.13rem;
+      --reader-size: 1.22rem;
       --reader-font: Georgia, "Times New Roman", Times, serif;
     }
 
@@ -41,7 +41,7 @@
       position: sticky;
       top: 0;
       z-index: 3;
-      padding: 18px 122px 14px 16px;
+      padding: 18px 48px 14px 16px;
       background: rgba(247, 244, 238, 0.96);
       border-bottom: 3px double var(--line);
       backdrop-filter: blur(8px);
@@ -69,10 +69,28 @@
       position: absolute;
       top: 10px;
       right: 10px;
-      display: flex;
+      display: none;
       align-items: center;
       gap: 4px;
       margin: 0;
+      padding: 6px;
+      background: rgba(247, 244, 238, 0.98);
+      border: 1px solid var(--line);
+    }
+
+    .nav-actions.is-open {
+      display: flex;
+    }
+
+    .settings-btn {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      z-index: 2;
+    }
+
+    .nav-actions.is-open + .settings-btn {
+      display: none;
     }
 
     .action-btn {
@@ -290,7 +308,7 @@
 
     @media (min-width: 680px) {
       header {
-        padding: 24px 132px 16px 22px;
+        padding: 24px 54px 16px 22px;
       }
 
       h1 {
@@ -309,7 +327,7 @@
     <header>
       <p class="date" id="briefingDate">Morning Briefing</p>
       <h1>Today's Global Briefing</h1>
-      <div class="nav-actions">
+      <div class="nav-actions" id="settingsPanel">
         <button class="action-btn" id="saveBriefingBtn" type="button" aria-label="Save briefing">
           <svg viewBox="0 0 24 24" aria-hidden="true">
             <path d="M5 4h11l3 3v13H5z"></path>
@@ -348,6 +366,12 @@
           </svg>
         </button>
       </div>
+      <button class="action-btn settings-btn" id="settingsBtn" type="button" aria-label="Open settings">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M12 15.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7z"></path>
+          <path d="M19.4 15a1.8 1.8 0 0 0 .36 1.98l.04.04a2.1 2.1 0 0 1-2.98 2.98l-.04-.04A1.8 1.8 0 0 0 14.8 19.6a1.8 1.8 0 0 0-1.1 1.64V21.3a2.1 2.1 0 0 1-4.2 0v-.06A1.8 1.8 0 0 0 8.4 19.6a1.8 1.8 0 0 0-1.98.36l-.04.04a2.1 2.1 0 0 1-2.98-2.98l.04-.04A1.8 1.8 0 0 0 3.8 15a1.8 1.8 0 0 0-1.64-1.1H2.1a2.1 2.1 0 0 1 0-4.2h.06A1.8 1.8 0 0 0 3.8 8.6a1.8 1.8 0 0 0-.36-1.98l-.04-.04A2.1 2.1 0 0 1 6.38 3.6l.04.04A1.8 1.8 0 0 0 8.4 4a1.8 1.8 0 0 0 1.1-1.64V2.3a2.1 2.1 0 0 1 4.2 0v.06A1.8 1.8 0 0 0 14.8 4a1.8 1.8 0 0 0 1.98-.36l.04-.04a2.1 2.1 0 0 1 2.98 2.98l-.04.04A1.8 1.8 0 0 0 19.4 8.6a1.8 1.8 0 0 0 1.64 1.1h.06a2.1 2.1 0 0 1 0 4.2h-.06A1.8 1.8 0 0 0 19.4 15z"></path>
+        </svg>
+      </button>
     </header>
 
     <main id="briefingView">
@@ -598,7 +622,7 @@
       system: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif'
     };
     const fontOrder = ["serif", "sans", "mono", "system"];
-    let readerSize = Number(localStorage.getItem(textSizeKey) || "1.13");
+    let readerSize = Number(localStorage.getItem(textSizeKey) || "1.22");
     let readerFont = localStorage.getItem(fontKey) || "serif";
 
     function applyReaderSize() {
@@ -822,7 +846,14 @@
     makeWordsClickable();
     schedulePeriodRefresh();
 
+    document.getElementById("settingsBtn").addEventListener("click", () => {
+      document.getElementById("settingsPanel").classList.add("is-open");
+    });
+
     document.getElementById("readableContent").addEventListener("click", (event) => {
+      if (!event.target.closest(".nav-actions, .settings-btn")) {
+        document.getElementById("settingsPanel").classList.remove("is-open");
+      }
       const word = event.target.closest(".lookup-word");
       if (!word) return;
       document.getElementById("dictionaryText").textContent = `${word.dataset.word}: ${findMeaning(word.dataset.word)}`;
