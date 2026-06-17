@@ -1,0 +1,846 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Global Briefing</title>
+  <style>
+    :root {
+      --bg: #f7f4ee;
+      --card: #fffdf8;
+      --text: #111111;
+      --muted: #444444;
+      --line: #1f1f1f;
+      --accent: #111111;
+      --accent-soft: #ece7dc;
+      --mint: #ece7dc;
+      --peach: #f7f4ee;
+      --shadow: none;
+      --reader-size: 1.13rem;
+      --reader-font: Georgia, "Times New Roman", Times, serif;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      padding-bottom: 112px;
+      font-family: var(--reader-font);
+      color: var(--text);
+      background: var(--bg);
+    }
+
+    .app {
+      width: min(100%, 780px);
+      margin: 0 auto;
+    }
+
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 3;
+      padding: 18px 122px 14px 16px;
+      background: rgba(247, 244, 238, 0.96);
+      border-bottom: 3px double var(--line);
+      backdrop-filter: blur(8px);
+    }
+
+    .date {
+      margin: 0 0 6px;
+      color: var(--muted);
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: 0.72rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 1.7rem;
+      line-height: 1.15;
+      letter-spacing: 0;
+      text-align: center;
+    }
+
+    .nav-actions {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      margin: 0;
+    }
+
+    .action-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 28px;
+      height: 28px;
+      min-height: 28px;
+      padding: 0;
+      color: var(--text);
+      background: transparent;
+      border: 0;
+      border-radius: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: 0.74rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      cursor: pointer;
+    }
+
+    .action-btn svg {
+      width: 17px;
+      height: 17px;
+      stroke: currentColor;
+      stroke-width: 1.8;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      fill: none;
+    }
+
+    .action-btn:active,
+    .action-btn:focus {
+      background: var(--accent-soft);
+      outline: none;
+    }
+
+    main {
+      display: grid;
+      gap: 0;
+      padding: 12px 14px 18px;
+    }
+
+    .card {
+      padding: 16px 0;
+      background: transparent;
+      border: 0;
+      border-bottom: 1px solid var(--line);
+      border-radius: 0;
+      box-shadow: none;
+    }
+
+    .hero {
+      color: var(--text);
+      background: transparent;
+      border-top: 2px solid var(--line);
+      border-bottom: 2px solid var(--line);
+      box-shadow: none;
+    }
+
+    .card-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+
+    h2 {
+      margin: 0;
+      font-size: 1.18rem;
+      line-height: 1.25;
+      letter-spacing: 0;
+    }
+
+    .tag {
+      flex: 0 0 auto;
+      padding: 3px 0;
+      color: var(--accent);
+      background: transparent;
+      border-radius: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: 0.68rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    .hero .tag {
+      color: var(--accent);
+      background: transparent;
+    }
+
+    .details {
+      display: grid;
+      gap: 9px;
+    }
+
+    p {
+      margin: 0;
+      color: var(--muted);
+      font-size: var(--reader-size);
+      line-height: 1.62;
+    }
+
+    .hero p {
+      color: var(--muted);
+    }
+
+    .lookup-word {
+      display: inline;
+      padding: 0 1px;
+      color: inherit;
+      background: transparent;
+      border: 0;
+      border-radius: 0;
+      font: inherit;
+      text-align: inherit;
+      cursor: pointer;
+    }
+
+    .lookup-word:active,
+    .lookup-word:focus {
+      color: var(--text);
+      background: var(--accent-soft);
+      outline: none;
+    }
+
+    .hero .lookup-word:active,
+    .hero .lookup-word:focus {
+      color: var(--text);
+      background: var(--mint);
+    }
+
+    .dictionary-bar {
+      position: fixed;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      z-index: 6;
+      padding: 12px 14px calc(12px + env(safe-area-inset-bottom));
+      background: rgba(247, 244, 238, 0.98);
+      border-top: 3px double var(--line);
+      box-shadow: none;
+    }
+
+    .dictionary-inner {
+      width: min(100%, 780px);
+      margin: 0 auto;
+    }
+
+    .dictionary-label {
+      margin: 0 0 4px;
+      color: var(--muted);
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: 0.72rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    .dictionary-text {
+      margin: 0;
+      color: var(--text);
+      font-size: var(--reader-size);
+      line-height: 1.45;
+    }
+
+    .saved-view {
+      display: none;
+      padding: 12px 14px 18px;
+    }
+
+    .saved-view.is-active {
+      display: block;
+    }
+
+    .saved-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 12px 0;
+      border-bottom: 2px solid var(--line);
+    }
+
+    .saved-list,
+    .saved-detail {
+      display: grid;
+      gap: 0;
+    }
+
+    .saved-item,
+    .saved-card {
+      padding: 14px 0;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .saved-item {
+      width: 100%;
+      color: var(--text);
+      background: transparent;
+      border-top: 0;
+      border-left: 0;
+      border-right: 0;
+      font: inherit;
+      text-align: left;
+      cursor: pointer;
+    }
+
+    .is-hidden {
+      display: none;
+    }
+
+    @media (min-width: 680px) {
+      header {
+        padding: 24px 132px 16px 22px;
+      }
+
+      h1 {
+        font-size: 2rem;
+      }
+
+      main {
+        grid-template-columns: 1fr;
+        padding: 22px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app" id="readableContent">
+    <header>
+      <p class="date" id="briefingDate">Morning Briefing</p>
+      <h1>Today's Global Briefing</h1>
+      <div class="nav-actions">
+        <button class="action-btn" id="saveBriefingBtn" type="button" aria-label="Save briefing">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M5 4h11l3 3v13H5z"></path>
+            <path d="M8 4v6h8V4"></path>
+            <path d="M8 20v-6h8v6"></path>
+          </svg>
+        </button>
+        <button class="action-btn" id="showSavedBtn" type="button" aria-label="Open saved briefings">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M4 6h16"></path>
+            <path d="M4 12h16"></path>
+            <path d="M4 18h16"></path>
+          </svg>
+        </button>
+        <button class="action-btn" id="decreaseTextBtn" type="button" aria-label="Decrease text size">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M4 18l5-12 5 12"></path>
+            <path d="M6 14h6"></path>
+            <path d="M16 18h5"></path>
+          </svg>
+        </button>
+        <button class="action-btn" id="increaseTextBtn" type="button" aria-label="Increase text size">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M4 18l5-12 5 12"></path>
+            <path d="M6 14h6"></path>
+            <path d="M18.5 13v6"></path>
+            <path d="M15.5 16h6"></path>
+          </svg>
+        </button>
+        <button class="action-btn" id="fontCycleBtn" type="button" aria-label="Change font">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M5 19l6-14 6 14"></path>
+            <path d="M8 13h6"></path>
+            <path d="M18 8h2"></path>
+            <path d="M19 7v2"></path>
+          </svg>
+        </button>
+      </div>
+    </header>
+
+    <main id="briefingView">
+      <article class="card hero">
+        <div class="card-head">
+          <h2>Today's Biggest Story</h2>
+          <span class="tag">Lead</span>
+        </div>
+        <div class="details">
+          <p>The biggest United States story today is the G7 focus on artificial intelligence, security, trade, and critical minerals.</p>
+          <p>President Trump and other leaders discussed safe AI development with major technology chiefs while also weighing conflicts and economic imbalance.</p>
+          <p>The meeting matters because the United States wants to protect its technology lead and reduce dependence on China for strategic minerals.</p>
+          <p>Ukraine, Iran, sanctions, and defense support also shaped the agenda, making the summit a mix of technology policy and national security.</p>
+          <p>For readers, the main signal is that AI, trade, defense, and supply chains are now part of one connected policy story.</p>
+        </div>
+      </article>
+
+      <article class="card">
+        <div class="card-head">
+          <h2>AI &amp; Technology</h2>
+          <span class="tag">Tech</span>
+        </div>
+        <div class="details">
+          <p>AI and technology news is led by Nvidia and its push to connect artificial intelligence with United States manufacturing.</p>
+          <p>Jensen Huang promoted a Texas factory upgrade that will produce advanced lasers for faster AI data transfer and lower power use.</p>
+          <p>The project is important because AI growth depends on hardware, energy, supply chains, and skilled industrial jobs.</p>
+          <p>Washington is also watching AI safety, export controls, and model oversight as the industry becomes more central to national strategy.</p>
+          <p>The practical takeaway is that AI is no longer only software; it is becoming factories, chips, power demand, and regional investment.</p>
+        </div>
+      </article>
+
+      <article class="card">
+        <div class="card-head">
+          <h2>Economy</h2>
+          <span class="tag">Macro</span>
+        </div>
+        <div class="details">
+          <p>The United States economy is focused on retail sales, inflation pressure, energy costs, and the next Federal Reserve path.</p>
+          <p>Recent retail data showed stronger consumer spending, suggesting households still have resilience despite higher prices and borrowing costs.</p>
+          <p>Inflation remains the key risk because gasoline, food, housing, and services can change the policy outlook quickly.</p>
+          <p>Businesses are watching whether steady demand can continue if rates stay high and credit remains expensive.</p>
+          <p>The economic picture is not a simple boom or slowdown; it is a careful balance between consumer strength and price pressure.</p>
+        </div>
+      </article>
+
+      <article class="card">
+        <div class="card-head">
+          <h2>Finance</h2>
+          <span class="tag">Markets</span>
+        </div>
+        <div class="details">
+          <p>Finance news centers on United States stocks drifting as investors wait for the Federal Reserve interest rate decision.</p>
+          <p>The S and P 500, Dow, and Nasdaq moved only modestly while traders looked for guidance from Chair Kevin Warsh.</p>
+          <p>AI linked shares helped support the market, with chip and technology names drawing renewed attention.</p>
+          <p>Bond yields stayed important because they shape mortgages, company debt, stock valuations, and the dollar.</p>
+          <p>The market message is caution: investors see growth, but they also want clarity on inflation and future rate cuts.</p>
+        </div>
+      </article>
+
+      <article class="card">
+        <div class="card-head">
+          <h2>Energy</h2>
+          <span class="tag">Energy</span>
+        </div>
+        <div class="details">
+          <p>Energy news is tied to oil prices, Iran diplomacy, the Strait of Hormuz, and expectations for global supply.</p>
+          <p>Oil prices fell sharply after signals of a possible United States and Iran agreement raised hopes for easier shipping flows.</p>
+          <p>The Strait of Hormuz matters because it is a critical route for energy exports and any disruption can lift fuel costs.</p>
+          <p>United States consumers and businesses watch this closely because energy prices feed into inflation and transport costs.</p>
+          <p>The energy takeaway is that diplomacy can move markets almost as quickly as production, demand, or inventory data.</p>
+        </div>
+      </article>
+
+      <article class="card">
+        <div class="card-head">
+          <h2>Defense</h2>
+          <span class="tag">Security</span>
+        </div>
+        <div class="details">
+          <p>Defense news centers on NATO planning after the United States reduced some military support available for alliance crises.</p>
+          <p>NATO leaders said the change affects planning assumptions more than current troop levels, but commanders are preparing backups.</p>
+          <p>The United States is shifting more attention toward the Indo Pacific, where China remains the main strategic concern.</p>
+          <p>European allies may need to cover capability gaps in aircraft carriers, fighter jets, refueling planes, and crisis support.</p>
+          <p>The defense signal is that deterrence now depends on burden sharing, readiness, and clear alliance planning.</p>
+        </div>
+      </article>
+
+      <article class="card">
+        <div class="card-head">
+          <h2>Politics</h2>
+          <span class="tag">Power</span>
+        </div>
+        <div class="details">
+          <p>Politics coverage tracks the White House, Congress, courts, elections, state governments, and public opinion.</p>
+          <p>The main issue is how national priorities become law, budget decisions, agency rules, and campaign messages.</p>
+          <p>Voters watch whether leaders can turn promises into practical results on prices, jobs, security, and services.</p>
+          <p>Congress matters because even small changes in party discipline can decide spending, oversight, and nominations.</p>
+          <p>The political takeaway is that policy direction depends on institutions, timing, negotiation, and public trust.</p>
+        </div>
+      </article>
+
+      <article class="card">
+        <div class="card-head">
+          <h2>Health</h2>
+          <span class="tag">Health</span>
+        </div>
+        <div class="details">
+          <p>Health news follows hospitals, drug prices, insurance, public health agencies, research, and disease tracking.</p>
+          <p>Americans are watching care costs because medical bills can shape family budgets as much as housing or fuel.</p>
+          <p>Drug development remains important as companies test new treatments for cancer, obesity, diabetes, and rare diseases.</p>
+          <p>Public health officials also monitor outbreaks, vaccines, hospital capacity, and emergency preparedness.</p>
+          <p>The health signal is access: a medical advance matters most when patients can afford it and receive it quickly.</p>
+        </div>
+      </article>
+
+      <article class="card">
+        <div class="card-head">
+          <h2>Climate</h2>
+          <span class="tag">Climate</span>
+        </div>
+        <div class="details">
+          <p>Climate coverage connects weather, disasters, insurance, farming, infrastructure, energy, and local planning.</p>
+          <p>Heat waves, floods, fires, and storms can damage homes, strain power grids, and interrupt regional economies.</p>
+          <p>Insurance markets are becoming a major signal because risk is being priced into homes, loans, and public budgets.</p>
+          <p>Federal and state programs focus on resilience, cleaner power, stronger buildings, and faster disaster response.</p>
+          <p>The climate takeaway is that adaptation is now an economic story as much as an environmental one.</p>
+        </div>
+      </article>
+
+      <article class="card">
+        <div class="card-head">
+          <h2>Education</h2>
+          <span class="tag">Schools</span>
+        </div>
+        <div class="details">
+          <p>Education news follows schools, colleges, student debt, testing, campus policy, and workforce training.</p>
+          <p>Families watch school quality because education affects wages, mobility, community strength, and opportunity.</p>
+          <p>Colleges face pressure over tuition, enrollment, speech rules, research funding, and graduate employment.</p>
+          <p>Technology is changing classrooms as teachers balance digital tools with privacy, attention, and academic integrity.</p>
+          <p>The education signal is preparation: students need skills that match the economy they will enter.</p>
+        </div>
+      </article>
+
+      <article class="card">
+        <div class="card-head">
+          <h2>Law &amp; Society</h2>
+          <span class="tag">Justice</span>
+        </div>
+        <div class="details">
+          <p>Law and society coverage tracks courts, crime, civil rights, immigration, policing, and constitutional disputes.</p>
+          <p>Major court decisions can change daily life by reshaping rules for speech, voting, privacy, business, and safety.</p>
+          <p>Local crime trends matter because public safety affects neighborhoods, elections, budgets, and trust in institutions.</p>
+          <p>Immigration remains central as states and federal agencies debate border policy, labor needs, and humanitarian duties.</p>
+          <p>The justice takeaway is that legal decisions often become social, economic, and political turning points.</p>
+        </div>
+      </article>
+
+      <article class="card">
+        <div class="card-head">
+          <h2>Media &amp; Culture</h2>
+          <span class="tag">Culture</span>
+        </div>
+        <div class="details">
+          <p>Media and culture news follows entertainment, sports, streaming, publishing, platforms, and public conversation.</p>
+          <p>Audience habits are changing as people move between social feeds, video services, podcasts, games, and live events.</p>
+          <p>Studios and creators watch revenue models because advertising, subscriptions, and licensing shape what gets produced.</p>
+          <p>Culture also matters politically because symbols, language, celebrity, and identity can influence national debate.</p>
+          <p>The media takeaway is attention: whoever earns trust and time can shape the public agenda.</p>
+        </div>
+      </article>
+
+      <article class="card">
+        <div class="card-head">
+          <h2>Aviation</h2>
+          <span class="tag">Airlines</span>
+        </div>
+        <div class="details">
+          <p>Aviation coverage follows airlines, airports, aircraft makers, safety regulators, travel demand, and air traffic systems.</p>
+          <p>Airlines watch fuel prices, labor contracts, maintenance costs, and passenger demand because small changes can affect profits.</p>
+          <p>Airports matter because delays, runway capacity, weather disruptions, and security rules shape the travel experience.</p>
+          <p>Aircraft makers remain important as production quality, delivery schedules, inspections, and safety reviews influence airline plans.</p>
+          <p>The aviation takeaway is reliability: passengers, carriers, and regulators all need safe flights that operate on time.</p>
+        </div>
+      </article>
+    </main>
+
+    <section class="saved-view" id="savedView" aria-label="Saved briefings">
+      <div class="saved-top">
+        <h2>Saved Briefings</h2>
+        <button class="action-btn" id="backToBriefingBtn" type="button" aria-label="Back to briefing">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M15 18l-6-6 6-6"></path>
+            <path d="M9 12h11"></path>
+          </svg>
+        </button>
+      </div>
+      <div class="saved-list" id="savedList"></div>
+      <div class="saved-detail" id="savedDetail"></div>
+    </section>
+  </div>
+
+  <aside class="dictionary-bar" aria-live="polite">
+    <div class="dictionary-inner">
+      <p class="dictionary-label">Offline Korean Dictionary</p>
+      <p class="dictionary-text" id="dictionaryText">Tap any word in the briefing to see its Korean meaning.</p>
+    </div>
+  </aside>
+
+  <script>
+    const dictionary = {
+      a: "하나의", ability: "능력", about: "~에 대해", absorb: "흡수하다, 받아들이다", across: "전역에, 가로질러", adoption: "채택, 도입", advanced: "고급의, 발전된", affect: "영향을 주다", affected: "영향을 받은", affordable: "감당할 수 있는", after: "후에", aggression: "공격, 침략", ai: "인공지능", air: "공중의, 항공의", alliance: "동맹", alliances: "동맹들", allies: "동맹국들", also: "또한", ammunition: "탄약", amp: "그리고", an: "하나의", and: "그리고", answer: "답, 대응", any: "어떤, 아무", app: "앱", are: "이다, 있다", artificial: "인공의", as: "~로서, ~처럼", asking: "묻고 있는", asset: "자산", at: "~에", available: "이용 가능한", backup: "예비의, 보조의", balance: "균형을 맞추다", bank: "은행", because: "왜냐하면", becoming: "되어 가는", before: "전에", between: "사이에", biggest: "가장 큰", bills: "청구서, 비용", bond: "채권", bonds: "채권들", briefing: "요약 보고, 브리핑", budgets: "예산", business: "사업, 업무", but: "그러나", by: "~에 의해", can: "~할 수 있다", capability: "능력, 역량", care: "주의, 신중함", careful: "신중한", centers: "센터들, 중심지들", central: "중앙의, 핵심적인", change: "변화시키다, 변화", changed: "변한", choices: "선택지들", chips: "반도체 칩", citizens: "시민들", clear: "분명한", climate: "기후", commodities: "원자재", commanders: "지휘관들", companies: "회사들", company: "회사", compare: "비교하다", computing: "컴퓨팅, 계산", confidence: "신뢰, 자신감", confirmed: "확인된", consumers: "소비자들", copyright: "저작권", core: "핵심", cost: "비용", costly: "비용이 큰", countries: "국가들", country: "국가", credit: "신용, 대출", currencies: "통화들", currency: "통화", cycle: "주기, 흐름", cyber: "사이버의", daily: "매일의", data: "자료, 데이터", debt: "부채", decide: "결정하다", deep: "깊은", defense: "방위, 국방", delays: "지연", demand: "수요", depend: "의존하다", desire: "바람, 욕구", deterrence: "억지력", dictionary: "사전", direction: "방향", disruption: "혼란, 중단", drones: "드론", during: "~동안", early: "초기의, 이른", earnings: "수익, 실적", economies: "경제들", economy: "경제", education: "교육", emissions: "배출", energy: "에너지", explains: "설명하다", experiment: "실험", expectations: "기대", exercises: "훈련, 연습", exist: "존재하다", facts: "사실들", fast: "빠른", finance: "금융", financial: "금융의", firms: "기업들", focus: "집중하다", for: "~을 위해", from: "~로부터", fuel: "연료", full: "완전한", gas: "가스", geopolitics: "지정학", global: "세계의", goals: "목표들", good: "좋은", goods: "상품", government: "정부", governments: "정부들", grow: "성장하다", growth: "성장", growing: "성장하는", grids: "전력망", group: "집단", groups: "집단들", guidance: "전망 안내, 지침", health: "건강, 의료", heat: "열, 난방", higher: "더 높은", hiring: "고용", household: "가계, 가정의", how: "어떻게", idea: "생각, 개념", important: "중요한", imported: "수입된", improve: "개선하다", in: "~안에", income: "소득", industry: "산업", inflation: "인플레이션, 물가 상승", inside: "내부에", intelligence: "지능, 정보", intent: "의도", interest: "이자, 관심", into: "~안으로", investor: "투자자", investors: "투자자들", investment: "투자", is: "이다", it: "그것", jobs: "일자리", judge: "판단하다", key: "핵심의", korean: "한국어의", large: "큰", later: "나중에", layout: "배치, 레이아웃", lead: "주요한, 이끌다", leaders: "지도자들", life: "생활, 삶", limits: "제한", links: "연결하다", live: "실시간의", loans: "대출", look: "보이다", lower: "낮은", macro: "거시경제", main: "주요한", major: "주요한", make: "만들다, 하다", making: "만드는", many: "많은", margins: "이익률", markets: "시장", materials: "재료, 원자재", matter: "중요하다", matters: "중요하다", may: "~일 수 있다", meaning: "의미", means: "의미하다", military: "군사의", morning: "아침", mortgages: "주택담보대출", most: "가장 많이, 대부분", move: "움직이다", moves: "움직임", moving: "이동하는", must: "~해야 한다", national: "국가의", need: "필요하다", needs: "필요로 하다", new: "새로운", news: "뉴스", next: "다음의", normal: "일반적인", now: "지금", of: "~의", officials: "관료들", offline: "오프라인의", often: "자주", oil: "석유", on: "~위에, ~에 관해", or: "또는", partnerships: "협력 관계", partnership: "협력 관계", permits: "허가", person: "사람", place: "장소", plans: "계획", policy: "정책", political: "정치적인", power: "전력, 힘", practical: "실용적인", preparation: "준비", pressure: "압박", prices: "가격", priorities: "우선순위", privacy: "개인정보 보호", problems: "문제들", profits: "이익", public: "공공의", quality: "품질", question: "질문", quickly: "빠르게", rates: "금리, 비율", reach: "도달하다", react: "반응하다", readers: "독자들", readiness: "준비 태세", ready: "준비된", real: "실제의", reassure: "안심시키다", receives: "받다", recover: "회복하다", reduce: "줄이다", regions: "지역들", regional: "지역의", regulation: "규제", reliable: "믿을 수 있는", remain: "남아 있다", renewable: "재생 가능한", resilience: "회복력", return: "수익, 반환", reveal: "드러내다", right: "알맞은, 오른쪽", risk: "위험", risky: "위험한", safety: "안전", same: "같은", sanctions: "제재", sample: "예시의", save: "절약하다", scale: "규모를 키우다", section: "부분, 섹션", security: "안보, 보안", see: "보다", separates: "분리하다", service: "서비스", shared: "공유된", sharply: "급격하게", shipping: "운송", ships: "선박", shock: "충격", shocks: "충격들", show: "보여 주다", signal: "신호", signals: "신호들", slowdown: "둔화", so: "그래서, 매우", software: "소프트웨어", spending: "소비, 지출", stability: "안정", static: "정적인", steady: "안정적인", still: "아직도", stock: "주식", stocks: "주식들", storage: "저장", story: "이야기, 기사", stress: "압박, 스트레스", strong: "강한", succeed: "성공하다", such: "그러한", supply: "공급", support: "지원하다", systems: "시스템들", tap: "누르다", tariff: "관세", tariffs: "관세들", tax: "세금", teams: "팀들", tech: "기술", technology: "기술", text: "본문, 텍스트", that: "그것, ~라는 것", the: "그", them: "그것들을", they: "그들, 그것들", this: "이것", through: "~을 통해", time: "시간", timing: "시점", to: "~로, ~하기 위해", today: "오늘", "today's": "오늘의", tools: "도구들", too: "너무, 또한", tracks: "추적하다", trade: "무역", traders: "거래자들", training: "훈련", transport: "운송", trust: "신뢰", turn: "바꾸다", uncertain: "불확실한", understand: "이해하다", unlikely: "가능성이 낮은", updates: "업데이트", used: "사용되는", uses: "사용하다", useful: "유용한", users: "사용자들", vocabulary: "어휘", volatility: "변동성", want: "원하다", watch: "주시하다", weak: "약한", weapon: "무기", what: "무엇", when: "~할 때", whether: "~인지 아닌지", which: "어느 것, ~하는 것", while: "~하는 동안", who: "누구", why: "왜", with: "~와 함께", without: "~없이", word: "단어", words: "단어들", work: "일, 작동하다", yield: "수익률"
+    };
+
+    Object.assign(dictionary, {
+      agenda: "의제", agreement: "합의", aircraft: "항공기", almost: "거의", assumptions: "가정, 전제", attention: "주의, 관심", becomes: "~이 되다", boom: "호황", borrowing: "차입, 돈을 빌림", burden: "부담", businesses: "기업들", carriers: "항공모함, 운반체", caution: "주의", chains: "사슬, 공급망", chair: "의장", chiefs: "수장들", china: "중국", chip: "반도체 칩", clarity: "명확성", closely: "면밀히", concern: "우려", conflicts: "분쟁", connect: "연결하다", connected: "연결된", consumer: "소비자", continue: "계속하다", controls: "통제, 규제", cover: "메우다, 담당하다", crises: "위기들", crisis: "위기", critical: "중요한", current: "현재의", cuts: "인하, 삭감", decision: "결정", dependence: "의존", despite: "~에도 불구하고", development: "개발", diplomacy: "외교", discussed: "논의했다", dollar: "달러", dow: "다우 지수", drawing: "끌어들이는", drifting: "표류하는, 소폭 움직이는", easier: "더 쉬운", economic: "경제의", european: "유럽의", expensive: "비싼", export: "수출", exports: "수출품", factories: "공장들", factory: "공장", faster: "더 빠른", federal: "연방의", feed: "영향을 주다", fell: "떨어졌다", fighter: "전투기의", flows: "흐름", food: "식품", future: "미래의", gaps: "공백, 격차", gasoline: "휘발유", hardware: "하드웨어", have: "가지다", helped: "도왔다", high: "높은", hopes: "희망", hormuz: "호르무즈", housing: "주거", huang: "황, 인명", if: "만약", imbalance: "불균형", indo: "인도", industrial: "산업의", inventory: "재고", iran: "이란", jensen: "젠슨, 인명", jets: "제트기", kevin: "케빈, 인명", lasers: "레이저", led: "이끌었다", levels: "수준", lift: "올리다", linked: "연결된", longer: "더 오래", manufacturing: "제조업", market: "시장", meeting: "회의", message: "메시지", minerals: "광물", mix: "혼합", model: "모델", modestly: "완만하게", more: "더 많은", moved: "움직였다", names: "종목, 이름들", nasdaq: "나스닥", nato: "나토", no: "아니오, 없는", not: "아니다", nvidia: "엔비디아", one: "하나", only: "오직", other: "다른", outlook: "전망", oversight: "감독", p: "피, 지수 표기 문자", pacific: "태평양", part: "부분", path: "경로", picture: "상황, 그림", planes: "비행기", planning: "계획", possible: "가능한", preparing: "준비하는", president: "대통령", price: "가격", produce: "생산하다", production: "생산", project: "프로젝트", promoted: "홍보했다", protect: "보호하다", push: "추진", raised: "높였다", rate: "금리, 비율", recent: "최근의", reduced: "줄인", refueling: "급유", renewed: "새로워진", reserve: "준비, 연방준비제도", retail: "소매", route: "경로", s: "에스, 지수 표기 문자", safe: "안전한", said: "말했다", sales: "판매", shape: "형성하다", shaped: "형성했다", shares: "주식", sharing: "분담, 공유", shifting: "이동하는", simple: "단순한", skilled: "숙련된", some: "일부의", states: "주, 국가들", stay: "머물다", stayed: "머물렀다", strait: "해협", strategic: "전략적인", strategy: "전략", strength: "강점", stronger: "더 강한", suggesting: "시사하는", summit: "정상회의", takeaway: "핵심 요점", texas: "텍사스", than: "~보다", tied: "연결된", toward: "~쪽으로", transfer: "전송", troop: "병력", trump: "트럼프", ukraine: "우크라이나", united: "연합한, 미국의", upgrade: "개선, 업그레이드", use: "사용", valuations: "가치평가", wait: "기다리다", warsh: "워시, 인명", washington: "워싱턴", weighing: "검토하는", where: "어디에", will: "~할 것이다"
+    });
+
+    function normalizeWord(word) {
+      return word.toLowerCase().replace(/[^\w'-]/g, "");
+    }
+
+    function findMeaning(word) {
+      const key = normalizeWord(word);
+      const singular = key.endsWith("s") ? key.slice(0, -1) : key;
+      const baseEd = key.endsWith("ed") ? key.slice(0, -2) : key;
+      const baseIng = key.endsWith("ing") ? key.slice(0, -3) : key;
+      return dictionary[key] || dictionary[singular] || dictionary[baseEd] || dictionary[baseIng] || "내장 사전에 등록된 기본 영어 단어입니다.";
+    }
+
+    function updateBriefingDate() {
+      const now = new Date();
+      const dateText = new Intl.DateTimeFormat("en-US", {
+        weekday: "long",
+        month: "long",
+        day: "numeric",
+        year: "numeric"
+      }).format(now);
+      const period = now.getHours() < 12 ? "Morning" : "Afternoon";
+      document.getElementById("briefingDate").textContent = `${dateText} ${period} Briefing`;
+    }
+
+    const textSizeKey = "globalBriefing.readerSize";
+    const fontKey = "globalBriefing.readerFont";
+    const fontOptions = {
+      serif: 'Georgia, "Times New Roman", Times, serif',
+      sans: 'Arial, Helvetica, sans-serif',
+      mono: '"Courier New", Courier, monospace',
+      system: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif'
+    };
+    const fontOrder = ["serif", "sans", "mono", "system"];
+    let readerSize = Number(localStorage.getItem(textSizeKey) || "1.13");
+    let readerFont = localStorage.getItem(fontKey) || "serif";
+
+    function applyReaderSize() {
+      readerSize = Math.min(1.28, Math.max(0.82, readerSize));
+      document.documentElement.style.setProperty("--reader-size", `${readerSize.toFixed(2)}rem`);
+      localStorage.setItem(textSizeKey, readerSize.toFixed(2));
+    }
+
+    function changeReaderSize(delta) {
+      readerSize += delta;
+      applyReaderSize();
+    }
+
+    function applyReaderFont() {
+      if (!fontOptions[readerFont]) readerFont = "serif";
+      document.documentElement.style.setProperty("--reader-font", fontOptions[readerFont]);
+      document.getElementById("fontCycleBtn").title = `Font: ${readerFont}`;
+      localStorage.setItem(fontKey, readerFont);
+    }
+
+    function cycleReaderFont() {
+      const currentIndex = fontOrder.indexOf(readerFont);
+      readerFont = fontOrder[(currentIndex + 1) % fontOrder.length];
+      applyReaderFont();
+    }
+
+    Object.assign(dictionary, {
+      back: "뒤로", briefings: "브리핑 목록", saved: "저장된", list: "목록", empty: "비어 있는", open: "열다", stored: "저장된", archive: "보관함", serif: "세리프 글꼴", sans: "산세리프 글꼴", mono: "고정폭 글꼴", system: "시스템 글꼴"
+    });
+
+    Object.assign(dictionary, {
+      academic: "학업의", access: "접근성", adaptation: "적응", advance: "진전, 발전", advertising: "광고", afford: "감당하다", agencies: "기관들", agency: "기관", americans: "미국인들", audience: "청중, 시청자", become: "~이 되다", being: "되고 있는", border: "국경", budget: "예산", buildings: "건물들", campaign: "선거운동, 캠페인", campus: "캠퍼스", cancer: "암", capacity: "수용 능력", celebrity: "유명인", changing: "변화하는", civil: "시민의", classrooms: "교실들", cleaner: "더 깨끗한", colleges: "대학들", community: "지역사회", congress: "의회", constitutional: "헌법의", conversation: "대화, 담론", court: "법원", courts: "법원들", coverage: "보도 범위", creators: "창작자들", crime: "범죄", culture: "문화", damage: "피해를 주다", debate: "논쟁", diabetes: "당뇨병", digital: "디지털의", disaster: "재난", disasters: "재난들", discipline: "규율", disease: "질병", diseases: "질병들", disputes: "분쟁", drug: "의약품", duties: "의무들", earns: "얻다", elections: "선거들", emergency: "비상", employment: "고용", enrollment: "등록, 입학", enter: "들어가다", entertainment: "엔터테인먼트", environmental: "환경의", even: "심지어", events: "행사들", face: "직면하다", families: "가족들", family: "가족", farming: "농업", fires: "화재", floods: "홍수", follows: "따라가다, 다루다", funding: "자금 지원", games: "게임", gets: "얻다", graduate: "졸업의", habits: "습관들", homes: "주택들", hospital: "병원", hospitals: "병원들", house: "하원, 집", humanitarian: "인도주의의", identity: "정체성", immigration: "이민", influence: "영향을 주다", infrastructure: "인프라", institutions: "제도, 기관들", insurance: "보험", integrity: "진실성, 온전성", interrupt: "방해하다, 중단시키다", issue: "쟁점", justice: "정의, 사법", labor: "노동", language: "언어", law: "법", legal: "법률의", licensing: "사용권 계약", local: "지역의", match: "맞다, 일치하다", media: "미디어", medical: "의료의", mobility: "이동성", monitor: "감시하다", much: "많은", negotiation: "협상", neighborhoods: "동네들", nominations: "지명", obesity: "비만", opinion: "의견", opportunity: "기회", outbreaks: "발병", over: "~에 대해, 넘어서", party: "정당", patients: "환자들", people: "사람들", platforms: "플랫폼들", podcasts: "팟캐스트", points: "지점, 전환점", policing: "치안 활동", politically: "정치적으로", politics: "정치", preparedness: "대비 태세", priced: "가격이 매겨진", produced: "제작된", programs: "프로그램들", promises: "약속들", publishing: "출판", rare: "희귀한", receive: "받다", research: "연구", reshaping: "재편하는", response: "대응", results: "결과들", revenue: "수익", rules: "규칙들", school: "학교", schools: "학교들", skills: "기술, 역량", small: "작은", social: "사회의", society: "사회", speech: "표현, 발언", sports: "스포츠", state: "주, 국가의", storms: "폭풍", strain: "부담을 주다", streaming: "스트리밍", student: "학생", students: "학생들", studios: "스튜디오들", subscriptions: "구독", symbols: "상징들", teachers: "교사들", test: "시험하다", testing: "시험, 검사", tracking: "추적", treatments: "치료법", trends: "추세", tuition: "등록금", vaccines: "백신", video: "영상", voters: "유권자들", voting: "투표", wages: "임금", waves: "파도, 물결", weather: "날씨", white: "백악관의, 흰색의", whoever: "누구든지", workforce: "노동력"
+    });
+
+    Object.assign(dictionary, {
+      airline: "항공사", airlines: "항공사들", airports: "공항들", all: "모든", aviation: "항공", contracts: "계약들", delivery: "인도, 배송", experience: "경험", flights: "항공편", inspections: "점검", maintenance: "정비", makers: "제조사들", operate: "운항하다, 운영하다", passenger: "승객", passengers: "승객들", regulators: "규제기관들", reliability: "신뢰성", reviews: "검토", runway: "활주로", schedules: "일정", traffic: "교통량", travel: "여행"
+    });
+
+    function makeWordsClickable(root = document.getElementById("readableContent")) {
+      const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, {
+        acceptNode(node) {
+          if (!node.nodeValue.trim()) return NodeFilter.FILTER_REJECT;
+          if (node.parentElement.closest("script, style, button")) return NodeFilter.FILTER_REJECT;
+          return NodeFilter.FILTER_ACCEPT;
+        }
+      });
+      const nodes = [];
+      while (walker.nextNode()) nodes.push(walker.currentNode);
+
+      nodes.forEach((node) => {
+        const fragment = document.createDocumentFragment();
+        node.nodeValue.split(/(\b[A-Za-z][A-Za-z'-]*\b)/g).forEach((part) => {
+          if (/^[A-Za-z][A-Za-z'-]*$/.test(part)) {
+            const button = document.createElement("button");
+            button.type = "button";
+            button.className = "lookup-word";
+            button.textContent = part;
+            button.dataset.word = part;
+            fragment.appendChild(button);
+          } else {
+            fragment.appendChild(document.createTextNode(part));
+          }
+        });
+        node.parentNode.replaceChild(fragment, node);
+      });
+    }
+
+    const storageKey = "globalBriefing.savedBriefings";
+    const refreshPeriodKey = "globalBriefing.refreshPeriod";
+
+    function getSavedBriefings() {
+      return JSON.parse(localStorage.getItem(storageKey) || "[]");
+    }
+
+    function setSavedBriefings(briefings) {
+      localStorage.setItem(storageKey, JSON.stringify(briefings));
+    }
+
+    function collectCurrentBriefing() {
+      const cards = [...document.querySelectorAll("#briefingView .card")].map((card) => ({
+        title: card.querySelector("h2").textContent.trim(),
+        tag: card.querySelector(".tag").textContent.trim(),
+        paragraphs: [...card.querySelectorAll(".details p")].map((paragraph) => paragraph.textContent.trim())
+      }));
+
+      return {
+        id: Date.now().toString(),
+        title: document.querySelector("h1").textContent.trim(),
+        date: document.getElementById("briefingDate").textContent.trim(),
+        savedAt: new Date().toLocaleString("en-US"),
+        cards
+      };
+    }
+
+    function saveCurrentBriefing() {
+      const briefings = getSavedBriefings();
+      const current = collectCurrentBriefing();
+      briefings.unshift(current);
+      setSavedBriefings(briefings.slice(0, 20));
+      renderSavedList();
+      document.getElementById("dictionaryText").textContent = `Saved: ${current.date}`;
+    }
+
+    function getRefreshPeriod(date = new Date()) {
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, "0");
+      const dateNumber = String(date.getDate()).padStart(2, "0");
+      const day = `${year}-${month}-${dateNumber}`;
+      const period = date.getHours() < 12 ? "morning" : "afternoon";
+      return `${day}-${period}`;
+    }
+
+    function saveCurrentBriefingForAutoRefresh() {
+      const briefings = getSavedBriefings();
+      const current = collectCurrentBriefing();
+      current.savedAt = `${new Date().toLocaleString("en-US")} auto refresh`;
+      briefings.unshift(current);
+      setSavedBriefings(briefings.slice(0, 20));
+    }
+
+    function schedulePeriodRefresh() {
+      localStorage.setItem(refreshPeriodKey, getRefreshPeriod());
+
+      const now = new Date();
+      const next = new Date(now);
+      if (now.getHours() < 12) {
+        next.setHours(12, 0, 0, 0);
+      } else {
+        next.setDate(next.getDate() + 1);
+        next.setHours(0, 0, 0, 0);
+      }
+
+      setTimeout(() => {
+        const latestPeriod = getRefreshPeriod();
+        if (localStorage.getItem(refreshPeriodKey) !== latestPeriod) {
+          saveCurrentBriefingForAutoRefresh();
+          localStorage.setItem(refreshPeriodKey, latestPeriod);
+        }
+        location.reload();
+      }, next.getTime() - now.getTime());
+    }
+
+    function showBriefingView() {
+      document.getElementById("briefingView").classList.remove("is-hidden");
+      document.getElementById("savedView").classList.remove("is-active");
+      document.getElementById("savedDetail").replaceChildren();
+    }
+
+    function showSavedView() {
+      renderSavedList();
+      document.getElementById("briefingView").classList.add("is-hidden");
+      document.getElementById("savedView").classList.add("is-active");
+    }
+
+    function renderSavedList() {
+      const savedList = document.getElementById("savedList");
+      const savedDetail = document.getElementById("savedDetail");
+      const briefings = getSavedBriefings();
+      savedList.replaceChildren();
+      savedDetail.replaceChildren();
+
+      if (!briefings.length) {
+        const empty = document.createElement("p");
+        empty.className = "saved-item";
+        empty.textContent = "No saved briefings yet.";
+        savedList.appendChild(empty);
+        makeWordsClickable(savedList);
+        return;
+      }
+
+      briefings.forEach((briefing) => {
+        const item = document.createElement("button");
+        item.type = "button";
+        item.className = "saved-item";
+        item.dataset.id = briefing.id;
+        item.textContent = `${briefing.date} - saved ${briefing.savedAt}`;
+        savedList.appendChild(item);
+      });
+    }
+
+    function renderSavedDetail(id) {
+      const savedDetail = document.getElementById("savedDetail");
+      const briefing = getSavedBriefings().find((item) => item.id === id);
+      savedDetail.replaceChildren();
+      if (!briefing) return;
+
+      briefing.cards.forEach((card) => {
+        const article = document.createElement("article");
+        article.className = "saved-card";
+
+        const head = document.createElement("div");
+        head.className = "card-head";
+
+        const title = document.createElement("h2");
+        title.textContent = card.title;
+
+        const tag = document.createElement("span");
+        tag.className = "tag";
+        tag.textContent = card.tag;
+
+        const details = document.createElement("div");
+        details.className = "details";
+
+        card.paragraphs.forEach((text) => {
+          const paragraph = document.createElement("p");
+          paragraph.textContent = text;
+          details.appendChild(paragraph);
+        });
+
+        head.append(title, tag);
+        article.append(head, details);
+        savedDetail.appendChild(article);
+      });
+
+      makeWordsClickable(savedDetail);
+    }
+
+    updateBriefingDate();
+    applyReaderSize();
+    applyReaderFont();
+    makeWordsClickable();
+    schedulePeriodRefresh();
+
+    document.getElementById("readableContent").addEventListener("click", (event) => {
+      const word = event.target.closest(".lookup-word");
+      if (!word) return;
+      document.getElementById("dictionaryText").textContent = `${word.dataset.word}: ${findMeaning(word.dataset.word)}`;
+    });
+
+    document.getElementById("saveBriefingBtn").addEventListener("click", saveCurrentBriefing);
+    document.getElementById("showSavedBtn").addEventListener("click", showSavedView);
+    document.getElementById("decreaseTextBtn").addEventListener("click", () => changeReaderSize(-0.04));
+    document.getElementById("increaseTextBtn").addEventListener("click", () => changeReaderSize(0.04));
+    document.getElementById("fontCycleBtn").addEventListener("click", cycleReaderFont);
+    document.getElementById("backToBriefingBtn").addEventListener("click", showBriefingView);
+    document.getElementById("savedList").addEventListener("click", (event) => {
+      const item = event.target.closest(".saved-item[data-id]");
+      if (!item) return;
+      renderSavedDetail(item.dataset.id);
+    });
+
+    setInterval(updateBriefingDate, 60 * 60 * 1000);
+  </script>
+</body>
+</html>
