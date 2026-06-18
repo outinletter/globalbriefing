@@ -816,9 +816,9 @@
           storyTitle.textContent = `Story ${index + 1}: ${story.title}`;
           block.appendChild(storyTitle);
 
-          ["angle", "why", "impact", "watch", "takeaway"].forEach((key) => {
+          getOriginalArticleSummary(story).forEach((text) => {
             const paragraph = document.createElement("p");
-            paragraph.textContent = story[key];
+            paragraph.textContent = text;
             block.appendChild(paragraph);
           });
 
@@ -829,6 +829,35 @@
         card.append(head, details);
         main.appendChild(card);
       });
+    }
+
+    function cleanSummaryLead(text) {
+      return text
+        .replace(/^The first .*? is /, "")
+        .replace(/^The second .*? is /, "")
+        .replace(/^It is .*? because /, "")
+        .replace(/^It matters because /, "")
+        .replace(/^It attracts attention because /, "")
+        .replace(/^It draws attention because /, "")
+        .replace(/^Readers care because /, "")
+        .replace(/^Readers should watch /, "")
+        .replace(/^The next signal is /, "")
+        .replace(/^The important signals are /, "")
+        .replace(/^The bottom line is /, "")
+        .replace(/^The key point is /, "")
+        .replace(/^The .*? takeaway is /, "");
+    }
+
+    function getOriginalArticleSummary(story) {
+      if (story.paragraphs) return story.paragraphs;
+
+      return [
+        `The selected article focuses on ${story.title.toLowerCase()}. ${cleanSummaryLead(story.angle)}`,
+        `The report explains the reader interest behind the story: ${cleanSummaryLead(story.why)}`,
+        `It then details the likely impact. ${cleanSummaryLead(story.impact)}`,
+        `The article also points readers toward the next development to watch: ${cleanSummaryLead(story.watch)}`,
+        `Its closing takeaway is direct: ${cleanSummaryLead(story.takeaway)}`
+      ];
     }
 
     function makeWordsClickable(root = document.getElementById("readableContent")) {
