@@ -4,6 +4,10 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Global Briefing</title>
+  <meta name="apple-mobile-web-app-title" content="Global Briefing">
+  <meta name="application-name" content="Global Briefing">
+  <link rel="apple-touch-icon" sizes="512x512" href="globalbriefing.png">
+  <link rel="icon" type="image/png" sizes="512x512" href="globalbriefing.png">
   <style>
     :root {
       --bg: #f7f4ee;
@@ -35,11 +39,15 @@
     .app {
       width: min(100%, 780px);
       margin: 0 auto;
+      padding-top: 100px;
     }
 
     header {
-      position: sticky;
+      position: fixed;
       top: 0;
+      left: 50%;
+      width: min(100%, 780px);
+      transform: translateX(-50%);
       z-index: 3;
       padding: 18px 48px 14px 16px;
       background: rgba(247, 244, 238, 0.96);
@@ -309,6 +317,10 @@
     @media (min-width: 680px) {
       header {
         padding: 24px 54px 16px 22px;
+      }
+
+      .app {
+        padding-top: 116px;
       }
 
       h1 {
