@@ -198,6 +198,25 @@
       gap: 9px;
     }
 
+    .story-block {
+      display: grid;
+      gap: 8px;
+      padding: 10px 0;
+      border-top: 1px solid var(--line);
+    }
+
+    .story-block:first-child {
+      border-top: 0;
+      padding-top: 0;
+    }
+
+    .story-title {
+      margin: 0;
+      color: var(--text);
+      font-size: 1rem;
+      line-height: 1.3;
+    }
+
     p {
       margin: 0;
       color: var(--muted);
@@ -673,6 +692,145 @@
       airline: "항공사", airlines: "항공사들", airports: "공항들", all: "모든", aviation: "항공", contracts: "계약들", delivery: "인도, 배송", experience: "경험", flights: "항공편", inspections: "점검", maintenance: "정비", makers: "제조사들", operate: "운항하다, 운영하다", passenger: "승객", passengers: "승객들", regulators: "규제기관들", reliability: "신뢰성", reviews: "검토", runway: "활주로", schedules: "일정", traffic: "교통량", travel: "여행"
     });
 
+    const briefingSections = [
+      {
+        title: "Today's Biggest Story", tag: "Lead", hero: true,
+        stories: [
+          { title: "G7 leaders put AI, trade, and strategic minerals on one table", angle: "The first major story is the United States push to treat AI leadership, secure supply chains, and mineral access as one national strategy.", why: "Readers followed it because the issue connects technology companies, defense planning, industrial policy, and China competition.", impact: "The practical effect is that chips, data centers, energy demand, and rare minerals now shape foreign policy as much as software does.", watch: "The next signal is whether allies agree on common rules for AI safety, export controls, and critical mineral sourcing.", takeaway: "This story matters because it shows that global briefings can no longer separate technology, trade, and security." },
+          { title: "Washington watches conflict risk while markets price policy uncertainty", angle: "The second major story is the way geopolitical risk continues to affect oil, defense planning, and investor confidence.", why: "It drew attention because diplomacy, sanctions, and military readiness can move markets before official policy changes are complete.", impact: "For households and companies, the risk appears through energy costs, inflation expectations, shipping routes, and public budgets.", watch: "The next signal is whether negotiations reduce pressure or whether leaders prepare for longer uncertainty.", takeaway: "The bottom line is that political risk is now an economic story for ordinary readers." }
+        ]
+      },
+      {
+        title: "AI & Technology", tag: "Tech",
+        stories: [
+          { title: "Nvidia and AI infrastructure stay at the center of technology coverage", angle: "The first technology story is the expansion of AI from software models into factories, chips, power systems, and data centers.", why: "It is widely read because AI growth depends on physical infrastructure that affects jobs, electricity use, and regional investment.", impact: "Companies that build chips, servers, lasers, and cooling systems are becoming as important as the model developers themselves.", watch: "Readers should watch whether supply can keep up with demand and whether export controls change the market.", takeaway: "The key point is that AI is becoming an industrial story, not only a software story." },
+          { title: "AI safety and regulation become mainstream business issues", angle: "The second technology story is the pressure on companies to prove that AI tools are reliable, accountable, and secure.", why: "It matters because schools, hospitals, banks, and public agencies are adopting tools that can influence real decisions.", impact: "Poor oversight can create privacy failures, biased results, security problems, and public distrust.", watch: "The next signal is whether regulators and companies agree on practical standards that do not block useful innovation.", takeaway: "The bottom line is that AI adoption now depends on trust as much as capability." }
+        ]
+      },
+      {
+        title: "Economy", tag: "Macro",
+        stories: [
+          { title: "Consumer spending remains the main test for the United States economy", angle: "The first economy story is whether households can keep spending while prices and borrowing costs remain high.", why: "It is heavily read because retail sales show the strength of ordinary consumers more clearly than many abstract indicators.", impact: "If spending holds, companies can protect revenue; if it weakens, hiring, investment, and growth can slow.", watch: "The next signal is whether wage gains continue to support demand without adding fresh inflation pressure.", takeaway: "The economy is still balanced between resilience and fatigue." },
+          { title: "Inflation keeps shaping Federal Reserve expectations", angle: "The second economy story is the path of inflation and how it affects future interest rate decisions.", why: "Readers care because rates influence mortgages, credit cards, business loans, and government borrowing.", impact: "Persistent inflation can delay relief, while softer data can support confidence in future rate cuts.", watch: "The important signals are gasoline, food, housing, services, and labor costs.", takeaway: "The bottom line is that inflation remains the main gatekeeper for economic optimism." }
+        ]
+      },
+      {
+        title: "Finance", tag: "Markets",
+        stories: [
+          { title: "Stocks move cautiously as investors wait for clearer rate signals", angle: "The first finance story is the cautious mood in United States stocks as investors compare growth hopes with rate uncertainty.", why: "It is popular because a small Federal Reserve signal can change expectations for bonds, stocks, and the dollar.", impact: "Higher yields can pressure valuations, while lower yields can support technology shares and risk assets.", watch: "Readers should watch market breadth, bond yields, earnings guidance, and inflation data.", takeaway: "The market message is cautious optimism with little room for policy surprises." },
+          { title: "AI-linked shares continue to support market sentiment", angle: "The second finance story is the continued influence of chip and AI infrastructure companies on major indexes.", why: "It attracts attention because a small number of large technology firms can move the wider market.", impact: "Strong AI demand can lift earnings expectations, but concentration also increases vulnerability if sentiment turns.", watch: "The next signal is whether revenue growth spreads beyond the largest names.", takeaway: "The bottom line is that AI remains both a growth engine and a concentration risk." }
+        ]
+      },
+      {
+        title: "Energy", tag: "Energy",
+        stories: [
+          { title: "Oil prices react quickly to diplomacy and shipping risk", angle: "The first energy story is the link between Iran diplomacy, shipping routes, and crude prices.", why: "It is widely followed because energy prices feed directly into inflation, transport costs, and household budgets.", impact: "Any change near the Strait of Hormuz can shift expectations for supply even before production data changes.", watch: "Readers should watch diplomatic signals, tanker movement, inventories, and refinery demand.", takeaway: "The energy market can move on policy headlines as fast as it moves on barrels." },
+          { title: "Power demand rises as AI data centers expand", angle: "The second energy story is the growing electricity demand created by data centers and advanced computing.", why: "It matters because AI growth needs reliable power, grid upgrades, and new investment.", impact: "Utilities, regulators, and communities face pressure to balance affordability, reliability, and emissions.", watch: "The next signal is whether grid construction and clean generation can keep pace.", takeaway: "The bottom line is that the AI boom is also an energy planning challenge." }
+        ]
+      },
+      {
+        title: "Defense", tag: "Security",
+        stories: [
+          { title: "NATO planning adjusts to changing United States priorities", angle: "The first defense story is the pressure on allies to prepare for more burden sharing.", why: "It is highly read because alliance planning affects deterrence, budgets, and crisis response.", impact: "European governments may need to cover gaps in air defense, logistics, refueling, and ammunition.", watch: "Readers should watch budget commitments, troop readiness, and joint procurement decisions.", takeaway: "The defense signal is that deterrence depends on planning depth, not only promises." },
+          { title: "The Indo-Pacific remains the central long-term strategic focus", angle: "The second defense story is the United States shift of attention toward China and the Indo-Pacific.", why: "It matters because ships, aircraft, cyber tools, and alliances are being shaped around that theater.", impact: "The shift can affect procurement, basing, training, and the amount of support available elsewhere.", watch: "The next signal is how Washington balances Europe, the Middle East, and the Pacific.", takeaway: "The bottom line is that defense strategy is a global allocation problem." }
+        ]
+      },
+      {
+        title: "Politics", tag: "Power",
+        stories: [
+          { title: "Congressional fights over spending and oversight remain central", angle: "The first politics story is the fight over budgets, investigations, nominations, and agency power.", why: "It is often read because congressional gridlock affects services, markets, defense, and regulation.", impact: "Even narrow votes can decide funding levels, policy deadlines, and political momentum.", watch: "Readers should watch party discipline, committee action, and leadership negotiations.", takeaway: "The political bottom line is that process stories can become pocketbook stories." },
+          { title: "Campaign messaging focuses on prices, security, and trust", angle: "The second politics story is how leaders frame the economy, immigration, public safety, and institutional confidence.", why: "It draws readers because voters connect national debates to daily costs and local concerns.", impact: "Messaging can influence turnout, donor behavior, policy priorities, and media attention.", watch: "The next signal is whether candidates can turn broad promises into specific plans.", takeaway: "Politics remains a contest over credibility as much as ideology." }
+        ]
+      },
+      {
+        title: "Health", tag: "Health",
+        stories: [
+          { title: "Medical costs remain a major household pressure point", angle: "The first health story is the continuing pressure from insurance, hospital bills, and drug prices.", why: "It is widely read because medical costs can reshape family budgets and political attitudes.", impact: "High costs can delay care, increase debt, and widen gaps between patients.", watch: "Readers should watch drug pricing, insurance rules, hospital capacity, and public health funding.", takeaway: "The health takeaway is that access matters as much as innovation." },
+          { title: "New treatments raise hopes while access questions remain", angle: "The second health story is the rapid development of treatments for obesity, cancer, diabetes, and rare diseases.", why: "It attracts attention because breakthroughs can change lives but may arrive with high prices.", impact: "Patients, insurers, and employers all face decisions about coverage, value, and long-term outcomes.", watch: "The next signal is whether supply expands and prices become more manageable.", takeaway: "The bottom line is that medicine advances fastest when science and access move together." }
+        ]
+      },
+      {
+        title: "Climate", tag: "Climate",
+        stories: [
+          { title: "Extreme weather turns climate into an insurance story", angle: "The first climate story is the rising cost of storms, floods, fires, and heat waves.", why: "It is widely read because insurance prices translate climate risk into household costs.", impact: "Homeowners, lenders, and local governments can all face higher costs when risk is repriced.", watch: "Readers should watch premium increases, disaster aid, building rules, and migration patterns.", takeaway: "Climate risk is becoming a financial planning issue for families and cities." },
+          { title: "Adaptation spending becomes a local infrastructure priority", angle: "The second climate story is the move from debate toward practical adaptation.", why: "It matters because communities need stronger grids, drainage, cooling centers, and emergency plans.", impact: "Investment can reduce damage, but it also creates budget choices for states and cities.", watch: "The next signal is whether federal and state programs fund resilience before disasters hit.", takeaway: "The climate bottom line is that preparation is cheaper than recovery." }
+        ]
+      },
+      {
+        title: "Education", tag: "Schools",
+        stories: [
+          { title: "Schools focus on learning recovery and workforce skills", angle: "The first education story is the effort to connect classroom learning with practical future work.", why: "It is read because families see education as the path to wages, mobility, and opportunity.", impact: "Schools face pressure to improve basic skills while also teaching digital and technical readiness.", watch: "Readers should watch testing, attendance, teacher staffing, and career training programs.", takeaway: "The education takeaway is that preparation must match the economy students will enter." },
+          { title: "Colleges face pressure over cost, speech, and enrollment", angle: "The second education story is the strain on higher education business models and public trust.", why: "It draws attention because tuition, debt, campus speech, and job outcomes affect families directly.", impact: "Lower enrollment or weaker confidence can change budgets, research funding, and regional economies.", watch: "The next signal is whether colleges prove value through employment and affordability.", takeaway: "The bottom line is that higher education must defend both access and trust." }
+        ]
+      },
+      {
+        title: "Law & Society", tag: "Justice",
+        stories: [
+          { title: "Court decisions continue to reshape daily life", angle: "The first law story is the influence of courts on business rules, privacy, voting, speech, and safety.", why: "It is heavily read because legal decisions can change behavior faster than legislation.", impact: "Families, companies, schools, and local governments often adjust immediately after major rulings.", watch: "Readers should watch appeals, enforcement guidance, and state-level responses.", takeaway: "The justice takeaway is that law often becomes practical policy overnight." },
+          { title: "Immigration and public safety stay at the center of local debate", angle: "The second society story is the pressure on communities dealing with borders, labor needs, crime, and services.", why: "It attracts attention because national policy is felt through schools, shelters, police, and workplaces.", impact: "Local budgets and public trust can shift when services are strained or safety concerns rise.", watch: "The next signal is whether federal and state governments coordinate or clash.", takeaway: "The bottom line is that social policy becomes real at the local level." }
+        ]
+      },
+      {
+        title: "Media & Culture", tag: "Culture",
+        stories: [
+          { title: "Streaming, sports, and platforms compete for attention", angle: "The first culture story is the fight for audience time across video, games, podcasts, sports, and social feeds.", why: "It is widely read because media habits affect advertising, subscriptions, and public conversation.", impact: "Studios and creators adjust what they produce based on revenue models and audience data.", watch: "Readers should watch rights deals, platform changes, creator pay, and live event demand.", takeaway: "The media takeaway is that attention is the central currency." },
+          { title: "Culture debates continue to influence politics and brands", angle: "The second culture story is the way identity, celebrity, language, and symbols shape public debate.", why: "It draws attention because cultural arguments can move voters and consumer behavior.", impact: "Brands, campaigns, and institutions must decide when to speak and when to stay quiet.", watch: "The next signal is whether audiences reward authenticity or punish missteps.", takeaway: "The bottom line is that culture is now a strategic arena." }
+        ]
+      },
+      {
+        title: "Aviation", tag: "Airlines",
+        stories: [
+          { title: "Airlines balance strong travel demand with cost pressure", angle: "The first aviation story is the tension between passenger demand and higher operating costs.", why: "It is widely read because travel affects families, business schedules, airport jobs, and tourism.", impact: "Fuel, maintenance, labor contracts, and aircraft availability can all pressure airline profits.", watch: "Readers should watch fares, route changes, delays, and seasonal booking trends.", takeaway: "The aviation takeaway is that demand is strong but reliability still decides confidence." },
+          { title: "Aircraft safety and production quality remain under scrutiny", angle: "The second aviation story is the focus on inspections, delivery schedules, and regulator oversight.", why: "It matters because safety concerns can affect airlines, manufacturers, passengers, and airport operations.", impact: "Delayed aircraft deliveries can limit capacity and force carriers to adjust growth plans.", watch: "The next signal is whether manufacturers improve quality while meeting airline demand.", takeaway: "The bottom line is that aviation growth depends on trust in safety systems." }
+        ]
+      }
+    ];
+
+    function renderBriefingCards() {
+      const main = document.getElementById("briefingView");
+      main.replaceChildren();
+
+      briefingSections.forEach((section) => {
+        const card = document.createElement("article");
+        card.className = section.hero ? "card hero" : "card";
+
+        const head = document.createElement("div");
+        head.className = "card-head";
+
+        const title = document.createElement("h2");
+        title.textContent = section.title;
+
+        const tag = document.createElement("span");
+        tag.className = "tag";
+        tag.textContent = section.tag;
+
+        const details = document.createElement("div");
+        details.className = "details";
+
+        section.stories.forEach((story, index) => {
+          const block = document.createElement("section");
+          block.className = "story-block";
+
+          const storyTitle = document.createElement("h3");
+          storyTitle.className = "story-title";
+          storyTitle.textContent = `Story ${index + 1}: ${story.title}`;
+          block.appendChild(storyTitle);
+
+          ["angle", "why", "impact", "watch", "takeaway"].forEach((key) => {
+            const paragraph = document.createElement("p");
+            paragraph.textContent = story[key];
+            block.appendChild(paragraph);
+          });
+
+          details.appendChild(block);
+        });
+
+        head.append(title, tag);
+        card.append(head, details);
+        main.appendChild(card);
+      });
+    }
+
     function makeWordsClickable(root = document.getElementById("readableContent")) {
       const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, {
         acceptNode(node) {
@@ -855,6 +1013,7 @@
     updateBriefingDate();
     applyReaderSize();
     applyReaderFont();
+    renderBriefingCards();
     makeWordsClickable();
     schedulePeriodRefresh();
 
