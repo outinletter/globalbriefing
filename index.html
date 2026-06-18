@@ -217,6 +217,28 @@
       line-height: 1.3;
     }
 
+    .reader-tools {
+      display: grid;
+      gap: 6px;
+      margin-top: 8px;
+      padding-top: 8px;
+      border-top: 1px dotted var(--line);
+    }
+
+    .reader-tool {
+      margin: 0;
+      color: var(--text);
+      font-size: calc(var(--reader-size) * 0.92);
+      line-height: 1.38;
+    }
+
+    .reader-tool strong {
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
     p {
       margin: 0;
       color: var(--muted);
@@ -822,6 +844,20 @@
             block.appendChild(paragraph);
           });
 
+          const tools = document.createElement("div");
+          tools.className = "reader-tools";
+
+          getReaderTools(story).forEach((item) => {
+            const paragraph = document.createElement("p");
+            paragraph.className = "reader-tool";
+            const label = document.createElement("strong");
+            label.textContent = item.label;
+            paragraph.append(label, document.createTextNode(` ${item.text}`));
+            tools.appendChild(paragraph);
+          });
+
+          block.appendChild(tools);
+
           details.appendChild(block);
         });
 
@@ -851,12 +887,37 @@
     function getOriginalArticleSummary(story) {
       if (story.paragraphs) return story.paragraphs;
 
+      const subject = story.title.toLowerCase();
+      const angle = cleanSummaryLead(story.angle);
+      const why = cleanSummaryLead(story.why);
+      const impact = cleanSummaryLead(story.impact);
+      const watch = cleanSummaryLead(story.watch);
+      const takeaway = cleanSummaryLead(story.takeaway);
+
       return [
-        `The selected article focuses on ${story.title.toLowerCase()}. ${cleanSummaryLead(story.angle)}`,
-        `The report explains the reader interest behind the story: ${cleanSummaryLead(story.why)}`,
-        `It then details the likely impact. ${cleanSummaryLead(story.impact)}`,
-        `The article also points readers toward the next development to watch: ${cleanSummaryLead(story.watch)}`,
-        `Its closing takeaway is direct: ${cleanSummaryLead(story.takeaway)}`
+        `${angle} The story is being treated as more than a single headline because it connects policy choices, institutional pressure, and the way readers understand risk in daily life.`,
+        `${why} That wider interest gives the article a broader frame: it is not only about officials or companies, but also about how decisions move through markets, households, agencies, and local communities.`,
+        `${impact} The article suggests that the consequences may appear gradually rather than all at once, with early effects showing up in prices, planning, confidence, investment, and public debate.`,
+        `${watch} This makes the next stage important because follow-up statements, data releases, legal decisions, corporate guidance, or international reactions could change the interpretation of the story.`,
+        `${takeaway} In practical terms, the reader should treat ${subject} as a developing issue rather than a finished event, because the most important effects may come after the initial news cycle.`,
+        `The larger context is that several fields now overlap: politics affects markets, technology affects energy, security affects trade, and public trust affects adoption. This is why the article belongs in a daily briefing rather than as an isolated update.`
+      ];
+    }
+
+    function getKeyVocabulary(story) {
+      const text = `${story.title} ${story.angle} ${story.why} ${story.impact} ${story.watch} ${story.takeaway}`.toLowerCase();
+      const terms = Object.keys(dictionary)
+        .filter((word) => word.length > 5 && text.includes(word))
+        .slice(0, 4);
+      return terms.length ? terms.join(", ") : "policy, market, risk";
+    }
+
+    function getReaderTools(story) {
+      return [
+        { label: "Takeaway", text: cleanSummaryLead(story.takeaway) },
+        { label: "Why It Matters", text: cleanSummaryLead(story.why) },
+        { label: "What to Watch", text: cleanSummaryLead(story.watch) },
+        { label: "Key Vocabulary", text: getKeyVocabulary(story) }
       ];
     }
 
