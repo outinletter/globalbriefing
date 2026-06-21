@@ -80,10 +80,18 @@
       overflow-x: auto;
       padding-bottom: 2px;
       scrollbar-width: none;
+      scroll-behavior: smooth;
+      cursor: grab;
+      user-select: none;
     }
 
     .section-nav::-webkit-scrollbar {
       display: none;
+    }
+
+    .section-nav.is-dragging {
+      cursor: grabbing;
+      scroll-behavior: auto;
     }
 
     .section-link {
@@ -98,6 +106,11 @@
       text-transform: uppercase;
       letter-spacing: 0.04em;
       cursor: pointer;
+    }
+
+    .section-link.is-active {
+      color: var(--bg);
+      background: var(--text);
     }
 
     .nav-actions {
@@ -245,11 +258,27 @@
       line-height: 1.3;
     }
 
+    .source-link {
+      color: var(--muted);
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: 0.72rem;
+      font-weight: 800;
+      text-transform: uppercase;
+    }
+
     p {
       margin: 0;
       color: var(--muted);
       font-size: var(--reader-size);
       line-height: 1.5;
+    }
+
+    .implication {
+      margin-top: 4px;
+      padding-top: 8px;
+      color: var(--text);
+      border-top: 1px solid var(--line);
+      font-weight: 700;
     }
 
     .hero p {
@@ -733,91 +762,156 @@
       {
         title: "Today's Biggest Story", tag: "Lead", hero: true,
         stories: [
-          { title: "G7 leaders put AI, trade, and strategic minerals on one table", angle: "The first major story is the United States push to treat AI leadership, secure supply chains, and mineral access as one national strategy.", why: "Readers followed it because the issue connects technology companies, defense planning, industrial policy, and China competition.", impact: "The practical effect is that chips, data centers, energy demand, and rare minerals now shape foreign policy as much as software does.", watch: "The next signal is whether allies agree on common rules for AI safety, export controls, and critical mineral sourcing.", takeaway: "This story matters because it shows that global briefings can no longer separate technology, trade, and security." },
+          { title: "G7 leaders form critical minerals alliance against economic coercion", source: "AP News", url: "https://apnews.com/live/g7-summit-updates-06-17-2026", paragraphs: [
+            "G7 leaders used the summit to connect critical minerals, artificial intelligence, energy security, and trade into one strategic agenda, with the minerals statement aimed at reducing exposure to arbitrary export restrictions and economic coercion. (G7 정상들은 정상회의에서 핵심 광물, 인공지능, 에너지 안보, 무역을 하나의 전략 의제로 연결했으며, 광물 성명은 자의적 수출 제한과 경제적 강압에 대한 노출을 줄이려는 목적을 담고 있습니다.)",
+            "The article frames minerals as a practical foundation for advanced technology, because semiconductors, clean energy equipment, defense systems, batteries, and data infrastructure all depend on reliable access to processed materials. (이 기사는 반도체, 청정에너지 장비, 방위 시스템, 배터리, 데이터 인프라가 모두 안정적인 가공 광물 접근에 의존하기 때문에 광물을 첨단기술의 실질적 기반으로 제시합니다.)",
+            "The summit also showed how AI policy has moved beyond model safety alone, since the ability to build and power AI systems now depends on factories, electricity, chips, export rules, and allied supply chains. (이번 정상회의는 AI 정책이 모델 안전만의 문제가 아니라는 점도 보여주었는데, AI 시스템을 만들고 구동하는 능력이 공장, 전력, 반도체, 수출 규칙, 동맹 공급망에 달려 있기 때문입니다.)",
+            "The central point is that global economic policy is becoming security policy: countries that control minerals, processing, chips, and energy routes can shape the pace of innovation and the leverage of rivals. (핵심은 세계 경제 정책이 안보 정책이 되고 있다는 점입니다. 광물, 가공, 반도체, 에너지 경로를 통제하는 국가는 혁신 속도와 경쟁국에 대한 영향력을 좌우할 수 있습니다.)"
+          ] },
           { title: "Washington watches conflict risk while markets price policy uncertainty", angle: "The second major story is the way geopolitical risk continues to affect oil, defense planning, and investor confidence.", why: "It drew attention because diplomacy, sanctions, and military readiness can move markets before official policy changes are complete.", impact: "For households and companies, the risk appears through energy costs, inflation expectations, shipping routes, and public budgets.", watch: "The next signal is whether negotiations reduce pressure or whether leaders prepare for longer uncertainty.", takeaway: "The bottom line is that political risk is now an economic story for ordinary readers." }
         ]
       },
       {
         title: "AI & Technology", tag: "Tech",
         stories: [
-          { title: "Nvidia and AI infrastructure stay at the center of technology coverage", angle: "The first technology story is the expansion of AI from software models into factories, chips, power systems, and data centers.", why: "It is widely read because AI growth depends on physical infrastructure that affects jobs, electricity use, and regional investment.", impact: "Companies that build chips, servers, lasers, and cooling systems are becoming as important as the model developers themselves.", watch: "Readers should watch whether supply can keep up with demand and whether export controls change the market.", takeaway: "The key point is that AI is becoming an industrial story, not only a software story." },
+          { title: "Nvidia's Jensen Huang says AI needs new social norms and more energy capacity", source: "AP News", url: "https://apnews.com/article/8334abcbc6ed8d3d7889b640ec6fa05b", paragraphs: [
+            "The AP interview presents Nvidia not just as a chipmaker but as a company sitting at the center of the national AI buildout, with Jensen Huang arguing that society needs new norms as AI spreads into work, science, and daily decision-making. (AP 인터뷰는 엔비디아를 단순한 반도체 기업이 아니라 국가적 AI 구축의 중심에 선 기업으로 제시하며, 젠슨 황은 AI가 일, 과학, 일상적 의사결정으로 확산되는 만큼 사회가 새로운 규범을 필요로 한다고 말합니다.)",
+            "Huang acknowledges the familiar concerns around jobs, inequality, security, and regulation, but the article emphasizes his view that the United States should keep AI development broad, competitive, and useful rather than treating it only as a threat. (황은 일자리, 불평등, 안보, 규제에 대한 익숙한 우려를 인정하지만, 기사는 미국이 AI를 위협으로만 보기보다 폭넓고 경쟁력 있으며 유용하게 발전시켜야 한다는 그의 시각을 강조합니다.)",
+            "A major practical theme is energy: AI data centers are creating enormous electricity demand, and Huang argues that America's AI ambitions will depend on whether the country can build enough power capacity and improve efficiency. (가장 중요한 실무적 주제는 에너지입니다. AI 데이터센터는 막대한 전력 수요를 만들고 있으며, 황은 미국의 AI 야심이 충분한 전력 역량을 구축하고 효율을 높일 수 있는지에 달려 있다고 봅니다.)",
+            "The article's broader message is that AI leadership is becoming an industrial and infrastructure contest, where chips, factories, power grids, political trust, and public acceptance matter as much as software breakthroughs. (이 기사의 더 넓은 메시지는 AI 주도권이 산업과 인프라 경쟁이 되고 있으며, 소프트웨어 혁신만큼 반도체, 공장, 전력망, 정치적 신뢰, 대중 수용성이 중요하다는 점입니다.)"
+          ] },
           { title: "AI safety and regulation become mainstream business issues", angle: "The second technology story is the pressure on companies to prove that AI tools are reliable, accountable, and secure.", why: "It matters because schools, hospitals, banks, and public agencies are adopting tools that can influence real decisions.", impact: "Poor oversight can create privacy failures, biased results, security problems, and public distrust.", watch: "The next signal is whether regulators and companies agree on practical standards that do not block useful innovation.", takeaway: "The bottom line is that AI adoption now depends on trust as much as capability." }
         ]
       },
       {
         title: "Economy", tag: "Macro",
         stories: [
-          { title: "Consumer spending remains the main test for the United States economy", angle: "The first economy story is whether households can keep spending while prices and borrowing costs remain high.", why: "It is heavily read because retail sales show the strength of ordinary consumers more clearly than many abstract indicators.", impact: "If spending holds, companies can protect revenue; if it weakens, hiring, investment, and growth can slow.", watch: "The next signal is whether wage gains continue to support demand without adding fresh inflation pressure.", takeaway: "The economy is still balanced between resilience and fatigue." },
+          { title: "Retail sales rose strongly in May, showing consumer resilience", source: "AP News", url: "https://apnews.com/article/retail-economy-consumer-spending-090206f028b12e15038265806355d75f", paragraphs: [
+            "AP reports that U.S. retail sales rose 0.9% in May, a stronger-than-expected gain that followed a revised 0.4% increase in April and showed that consumers were still spending despite inflation and elevated gasoline costs. (AP는 미국 소매 판매가 5월에 0.9% 증가했다고 보도했으며, 이는 4월의 수정치 0.4% 증가에 이어 예상보다 강한 수치로, 소비자들이 인플레이션과 높은 휘발유 비용 속에서도 여전히 지출하고 있음을 보여줍니다.)",
+            "The gains were broad enough to matter for the economy, with spending rising in categories such as clothing, accessories, furniture, and online sales, while gasoline effects did not fully explain the strength. (증가는 의류, 액세서리, 가구, 온라인 판매 등 여러 범주에서 나타났기 때문에 경제적으로 의미가 있었고, 휘발유 가격 효과만으로 설명되지는 않았습니다.)",
+            "The article also notes weaker spots, including electronics, appliances, department stores, and a slight decline in restaurant spending, suggesting that households are still making selective choices under price pressure. (기사는 전자제품, 가전, 백화점, 음식점 지출의 소폭 감소 같은 약한 부분도 언급하며, 가계가 가격 압박 속에서 여전히 선택적으로 소비하고 있음을 시사합니다.)",
+            "The main takeaway is that the U.S. consumer remains a source of economic support, but the durability of that support depends on fuel prices, wages, hiring, tax refunds, and whether inflation keeps squeezing discretionary purchases. (핵심 결론은 미국 소비자가 여전히 경제를 지탱하는 축이지만, 그 지속성은 연료 가격, 임금, 고용, 세금 환급, 인플레이션이 선택적 지출을 계속 압박하는지에 달려 있다는 점입니다.)"
+          ] },
           { title: "Inflation keeps shaping Federal Reserve expectations", angle: "The second economy story is the path of inflation and how it affects future interest rate decisions.", why: "Readers care because rates influence mortgages, credit cards, business loans, and government borrowing.", impact: "Persistent inflation can delay relief, while softer data can support confidence in future rate cuts.", watch: "The important signals are gasoline, food, housing, services, and labor costs.", takeaway: "The bottom line is that inflation remains the main gatekeeper for economic optimism." }
         ]
       },
       {
         title: "Finance", tag: "Markets",
         stories: [
-          { title: "Stocks move cautiously as investors wait for clearer rate signals", angle: "The first finance story is the cautious mood in United States stocks as investors compare growth hopes with rate uncertainty.", why: "It is popular because a small Federal Reserve signal can change expectations for bonds, stocks, and the dollar.", impact: "Higher yields can pressure valuations, while lower yields can support technology shares and risk assets.", watch: "Readers should watch market breadth, bond yields, earnings guidance, and inflation data.", takeaway: "The market message is cautious optimism with little room for policy surprises." },
+          { title: "U.S. stocks sink on worries about possible Fed rate hikes", source: "AP News", url: "https://apnews.com/article/stocks-markets-rates-oil-us-iran-02e500f15edc505cedd8a8428197744c", paragraphs: [
+            "AP reports that U.S. stocks fell after investors focused on the possibility that the Federal Reserve could raise interest rates this year to keep inflation under control. (AP는 투자자들이 연방준비제도가 인플레이션을 억제하기 위해 올해 금리를 올릴 가능성에 주목하면서 미국 주식이 하락했다고 보도합니다.)",
+            "The article explains the market logic clearly: higher rates can help slow price increases, but they also weigh on economic growth and reduce the appeal of stocks by making safer yields more attractive. (기사는 시장 논리를 분명히 설명합니다. 높은 금리는 물가 상승을 늦추는 데 도움이 될 수 있지만 경제 성장을 압박하고 안전한 수익률의 매력을 높여 주식의 매력을 낮춥니다.)",
+            "The selloff reflected a shift in expectations rather than a single corporate problem, with major indexes reacting to policy uncertainty, bond yields, oil-linked inflation pressure, and the Fed's communication. (이번 매도세는 특정 기업 문제가 아니라 기대 변화의 결과였으며, 주요 지수는 정책 불확실성, 채권 수익률, 유가 관련 인플레이션 압력, 연준의 메시지에 반응했습니다.)",
+            "The summary point is that markets are not only trading earnings now; they are trading the path of inflation and central-bank credibility, which can change valuations quickly. (요약하자면 시장은 이제 기업 실적만 거래하는 것이 아니라 인플레이션 경로와 중앙은행 신뢰도를 거래하고 있으며, 이는 밸류에이션을 빠르게 바꿀 수 있습니다.)"
+          ] },
           { title: "AI-linked shares continue to support market sentiment", angle: "The second finance story is the continued influence of chip and AI infrastructure companies on major indexes.", why: "It attracts attention because a small number of large technology firms can move the wider market.", impact: "Strong AI demand can lift earnings expectations, but concentration also increases vulnerability if sentiment turns.", watch: "The next signal is whether revenue growth spreads beyond the largest names.", takeaway: "The bottom line is that AI remains both a growth engine and a concentration risk." }
         ]
       },
       {
         title: "Energy", tag: "Energy",
         stories: [
-          { title: "Oil prices react quickly to diplomacy and shipping risk", angle: "The first energy story is the link between Iran diplomacy, shipping routes, and crude prices.", why: "It is widely followed because energy prices feed directly into inflation, transport costs, and household budgets.", impact: "Any change near the Strait of Hormuz can shift expectations for supply even before production data changes.", watch: "Readers should watch diplomatic signals, tanker movement, inventories, and refinery demand.", takeaway: "The energy market can move on policy headlines as fast as it moves on barrels." },
+          { title: "Oil and gas supplies could take months to normalize after the Iran deal", source: "AP News", url: "https://apnews.com/article/iran-war-trump-deal-oil-supply-strait-of-hormuz-42bdd71d5afa6fb5ac5d0c3e7857de6c", paragraphs: [
+            "AP reports that an agreement to end the Iran war and reopen the Strait of Hormuz does not mean high oil and gasoline prices will disappear immediately. (AP는 이란 전쟁을 끝내고 호르무즈 해협을 다시 열기 위한 합의가 고유가와 휘발유 가격 문제를 즉시 해결한다는 뜻은 아니라고 보도합니다.)",
+            "The article stresses the lag between diplomacy and supply recovery, because shipping schedules, inventories, refinery operations, insurance costs, and market confidence all take time to reset. (기사는 외교와 공급 회복 사이의 시차를 강조합니다. 선박 일정, 재고, 정유 운영, 보험 비용, 시장 신뢰가 모두 정상화되는 데 시간이 걸리기 때문입니다.)",
+            "For households and businesses, the story matters because energy costs move through gasoline, freight, airline fuel, food distribution, inflation expectations, and central-bank decisions. (가계와 기업에 이 기사가 중요한 이유는 에너지 비용이 휘발유, 운송, 항공유, 식품 유통, 인플레이션 기대, 중앙은행 결정으로 이어지기 때문입니다.)",
+            "The main conclusion is that energy markets can price peace quickly, but the real economy feels relief only when physical supply chains, storage, transport, and refining capacity stabilize. (핵심 결론은 에너지 시장은 평화를 빠르게 가격에 반영할 수 있지만, 실물경제는 물리적 공급망, 저장, 운송, 정유 역량이 안정될 때에야 완화 효과를 체감한다는 점입니다.)"
+          ] },
           { title: "Power demand rises as AI data centers expand", angle: "The second energy story is the growing electricity demand created by data centers and advanced computing.", why: "It matters because AI growth needs reliable power, grid upgrades, and new investment.", impact: "Utilities, regulators, and communities face pressure to balance affordability, reliability, and emissions.", watch: "The next signal is whether grid construction and clean generation can keep pace.", takeaway: "The bottom line is that the AI boom is also an energy planning challenge." }
         ]
       },
       {
         title: "Defense", tag: "Security",
         stories: [
-          { title: "NATO planning adjusts to changing United States priorities", angle: "The first defense story is the pressure on allies to prepare for more burden sharing.", why: "It is highly read because alliance planning affects deterrence, budgets, and crisis response.", impact: "European governments may need to cover gaps in air defense, logistics, refueling, and ammunition.", watch: "Readers should watch budget commitments, troop readiness, and joint procurement decisions.", takeaway: "The defense signal is that deterrence depends on planning depth, not only promises." },
+          { title: "NATO allies face pressure to spend more and plan for heavier burden sharing", source: "Atlantic Council", url: "https://www.atlanticcouncil.org/blogs/new-atlanticist/nato-defense-spending-how-to-read-the-numbers/", paragraphs: [
+            "The article explains that NATO defense spending is no longer just a budget statistic; it has become a test of whether allies can provide credible deterrence if the United States shifts more attention elsewhere. (이 기사는 NATO 국방비가 더 이상 단순한 예산 통계가 아니라, 미국이 다른 지역에 더 많은 관심을 돌릴 경우 동맹국들이 신뢰할 만한 억지력을 제공할 수 있는지를 가늠하는 시험대가 되었다고 설명합니다.)",
+            "It breaks down why headline spending targets can be misleading, because readiness also depends on ammunition, air defense, logistics, industrial capacity, troop availability, and the ability to sustain operations. (이 기사는 단순한 지출 목표만으로는 상황을 오해할 수 있다고 설명합니다. 준비 태세는 탄약, 방공, 군수, 산업 역량, 병력 가용성, 작전 지속 능력에도 달려 있기 때문입니다.)",
+            "The defense issue therefore becomes political as well as military, since governments must persuade voters that higher spending today reduces the chance of a much costlier crisis later. (따라서 국방 문제는 군사적 문제이면서 정치적 문제가 됩니다. 정부는 오늘의 더 높은 지출이 나중의 훨씬 비싼 위기 가능성을 줄인다는 점을 유권자에게 설득해야 하기 때문입니다.)",
+            "The core lesson is that alliance strength should be measured by usable capability, not only by pledges, and that burden sharing will remain a defining question for transatlantic security. (핵심 교훈은 동맹의 힘을 약속만이 아니라 실제 사용 가능한 역량으로 측정해야 하며, 부담 분담이 대서양 안보의 핵심 질문으로 남을 것이라는 점입니다.)"
+          ] },
           { title: "The Indo-Pacific remains the central long-term strategic focus", angle: "The second defense story is the United States shift of attention toward China and the Indo-Pacific.", why: "It matters because ships, aircraft, cyber tools, and alliances are being shaped around that theater.", impact: "The shift can affect procurement, basing, training, and the amount of support available elsewhere.", watch: "The next signal is how Washington balances Europe, the Middle East, and the Pacific.", takeaway: "The bottom line is that defense strategy is a global allocation problem." }
         ]
       },
       {
         title: "Politics", tag: "Power",
         stories: [
-          { title: "Congressional fights over spending and oversight remain central", angle: "The first politics story is the fight over budgets, investigations, nominations, and agency power.", why: "It is often read because congressional gridlock affects services, markets, defense, and regulation.", impact: "Even narrow votes can decide funding levels, policy deadlines, and political momentum.", watch: "Readers should watch party discipline, committee action, and leadership negotiations.", takeaway: "The political bottom line is that process stories can become pocketbook stories." },
+          { title: "Republicans stumble as they try to advance Trump's agenda", source: "AP News", url: "https://apnews.com/article/republicans-agenda-trump-government-funding-defense-reconciliation-dc4fb5d060ce6f46dfc09cec9cebb95b", paragraphs: [
+            "AP describes a Republican struggle to move major parts of Donald Trump's agenda through Congress, with disputes over government funding, defense spending, reconciliation rules, and policy priorities slowing the process. (AP는 공화당이 도널드 트럼프의 주요 의제를 의회에서 처리하는 데 어려움을 겪고 있으며, 정부 재정, 국방비, 예산조정 절차, 정책 우선순위를 둘러싼 갈등이 진행을 늦추고 있다고 설명합니다.)",
+            "The article shows how narrow majorities make party discipline essential, because a small number of defections can derail deadlines, force rewrites, or weaken leadership's negotiating position. (이 기사는 근소한 다수당 상황에서 당내 규율이 필수적임을 보여줍니다. 소수의 이탈만으로도 시한이 무너지고, 법안 수정이 필요해지며, 지도부의 협상력이 약해질 수 있기 때문입니다.)",
+            "The stakes extend beyond Washington procedure, since spending fights can affect agency operations, military planning, social programs, markets, and the public's sense of whether government can function. (이 문제의 중요성은 워싱턴 절차를 넘어섭니다. 예산 갈등은 정부기관 운영, 군사 계획, 사회 프로그램, 시장, 정부가 제대로 작동하는지에 대한 대중의 인식에 영향을 줄 수 있습니다.)",
+            "The summary point is that process stories often become everyday stories: when Congress cannot align power, money, and deadlines, the effects move into services, prices, contracts, and political trust. (요약하자면 절차적 이야기는 자주 일상적 이야기로 바뀝니다. 의회가 권력, 돈, 시한을 맞추지 못하면 그 영향은 서비스, 물가, 계약, 정치적 신뢰로 이어집니다.)"
+          ] },
           { title: "Campaign messaging focuses on prices, security, and trust", angle: "The second politics story is how leaders frame the economy, immigration, public safety, and institutional confidence.", why: "It draws readers because voters connect national debates to daily costs and local concerns.", impact: "Messaging can influence turnout, donor behavior, policy priorities, and media attention.", watch: "The next signal is whether candidates can turn broad promises into specific plans.", takeaway: "Politics remains a contest over credibility as much as ideology." }
         ]
       },
       {
         title: "Health", tag: "Health",
         stories: [
-          { title: "Medical costs remain a major household pressure point", angle: "The first health story is the continuing pressure from insurance, hospital bills, and drug prices.", why: "It is widely read because medical costs can reshape family budgets and political attitudes.", impact: "High costs can delay care, increase debt, and widen gaps between patients.", watch: "Readers should watch drug pricing, insurance rules, hospital capacity, and public health funding.", takeaway: "The health takeaway is that access matters as much as innovation." },
+          { title: "Trump signs order on hospital prices as patients face hidden costs", source: "AP News", url: "https://apnews.com/article/trump-hospital-prices-healthcare-affordability-313817c2ba73f1a3f4055ecde27b82be", paragraphs: [
+            "AP reports that the White House moved to make hospital prices more transparent, arguing that patients need clearer information before they receive care and face bills that can strain family finances. (AP는 백악관이 병원 가격 투명성을 높이려 했다고 보도하며, 환자들이 진료를 받기 전에 더 명확한 정보를 알아야 하고 이후 가계 재정에 부담을 주는 청구서를 마주할 수 있다고 설명합니다.)",
+            "The article's practical focus is affordability rather than medical innovation, because even insured patients can struggle to understand what a procedure will cost or how much they will owe. (이 기사의 실질적 초점은 의료 혁신보다 비용 부담입니다. 보험에 가입한 환자도 시술 비용과 본인 부담액을 이해하는 데 어려움을 겪을 수 있기 때문입니다.)",
+            "Price transparency is presented as only one part of the problem, since hospitals, insurers, negotiated rates, emergency needs, and complex billing systems can still make care expensive and confusing. (가격 투명성은 문제의 일부로 제시됩니다. 병원, 보험사, 협상 요율, 응급 상황, 복잡한 청구 시스템이 여전히 의료를 비싸고 혼란스럽게 만들 수 있기 때문입니다.)",
+            "The main conclusion is that health care policy is household economic policy: medical bills can shape debt, delayed care, political frustration, and trust in institutions. (핵심 결론은 보건의료 정책이 곧 가계 경제 정책이라는 점입니다. 의료비는 부채, 진료 지연, 정치적 불만, 제도에 대한 신뢰를 좌우할 수 있습니다.)"
+          ] },
           { title: "New treatments raise hopes while access questions remain", angle: "The second health story is the rapid development of treatments for obesity, cancer, diabetes, and rare diseases.", why: "It attracts attention because breakthroughs can change lives but may arrive with high prices.", impact: "Patients, insurers, and employers all face decisions about coverage, value, and long-term outcomes.", watch: "The next signal is whether supply expands and prices become more manageable.", takeaway: "The bottom line is that medicine advances fastest when science and access move together." }
         ]
       },
       {
         title: "Climate", tag: "Climate",
         stories: [
-          { title: "Extreme weather turns climate into an insurance story", angle: "The first climate story is the rising cost of storms, floods, fires, and heat waves.", why: "It is widely read because insurance prices translate climate risk into household costs.", impact: "Homeowners, lenders, and local governments can all face higher costs when risk is repriced.", watch: "Readers should watch premium increases, disaster aid, building rules, and migration patterns.", takeaway: "Climate risk is becoming a financial planning issue for families and cities." },
+          { title: "Home insurance turmoil shows climate risk becoming a household cost", source: "Axios", url: "https://www.axios.com/2026/01/15/home-insurance-climate-change-costs", paragraphs: [
+            "The article describes how climate-related disasters are pushing home insurance into a national affordability problem, with storms, fires, floods, and heat raising expected losses for insurers. (이 기사는 기후 관련 재난이 주택 보험을 전국적 비용 부담 문제로 밀어 올리고 있으며, 폭풍, 화재, 홍수, 폭염이 보험사의 예상 손실을 높이고 있다고 설명합니다.)",
+            "For households, climate risk becomes visible through premiums, deductibles, coverage limits, nonrenewals, and mortgage decisions, not only through scientific reports or disaster footage. (가계 입장에서 기후 위험은 과학 보고서나 재난 영상뿐 아니라 보험료, 자기부담금, 보장 한도, 갱신 거절, 주택담보대출 결정으로 드러납니다.)",
+            "The article also points to a wider feedback loop: as insurance becomes more expensive or harder to obtain, housing markets, local tax bases, lenders, and migration choices can all be affected. (이 기사는 더 넓은 피드백 구조도 지적합니다. 보험이 더 비싸지거나 구하기 어려워지면 주택시장, 지방 세수, 대출기관, 이주 선택이 모두 영향을 받을 수 있습니다.)",
+            "The key conclusion is that climate adaptation is no longer abstract; it is becoming a financial planning issue for families, cities, banks, and state regulators. (핵심 결론은 기후 적응이 더 이상 추상적 문제가 아니라는 점입니다. 이는 가족, 도시, 은행, 주 규제기관의 재정 계획 문제가 되고 있습니다.)"
+          ] },
           { title: "Adaptation spending becomes a local infrastructure priority", angle: "The second climate story is the move from debate toward practical adaptation.", why: "It matters because communities need stronger grids, drainage, cooling centers, and emergency plans.", impact: "Investment can reduce damage, but it also creates budget choices for states and cities.", watch: "The next signal is whether federal and state programs fund resilience before disasters hit.", takeaway: "The climate bottom line is that preparation is cheaper than recovery." }
         ]
       },
       {
         title: "Education", tag: "Schools",
         stories: [
-          { title: "Schools focus on learning recovery and workforce skills", angle: "The first education story is the effort to connect classroom learning with practical future work.", why: "It is read because families see education as the path to wages, mobility, and opportunity.", impact: "Schools face pressure to improve basic skills while also teaching digital and technical readiness.", watch: "Readers should watch testing, attendance, teacher staffing, and career training programs.", takeaway: "The education takeaway is that preparation must match the economy students will enter." },
+          { title: "States connect schools with workforce needs through career pathways", source: "Bipartisan Policy Center", url: "https://bipartisanpolicy.org/report/workforce-development-education/", paragraphs: [
+            "The report explains that education and workforce policy are increasingly being linked, because students need clearer routes from classroom learning into credentials, training, and jobs. (이 보고서는 학생들이 교실 학습에서 자격증, 훈련, 일자리로 이어지는 더 분명한 경로를 필요로 하기 때문에 교육 정책과 인력 정책이 점점 더 연결되고 있다고 설명합니다.)",
+            "It emphasizes career pathways, apprenticeships, employer partnerships, and technical education as ways to make schooling more directly connected to local labor-market demand. (보고서는 학교 교육을 지역 노동시장 수요와 더 직접적으로 연결하는 방법으로 진로 경로, 견습, 고용주 협력, 기술 교육을 강조합니다.)",
+            "The education challenge is not only test recovery after pandemic disruption, but also whether schools can help students build durable skills while employers face shortages in health care, technology, manufacturing, and public services. (교육 과제는 팬데믹 이후 시험 성적 회복만이 아니라, 의료, 기술, 제조, 공공서비스 분야의 인력 부족 속에서 학교가 학생들에게 오래 지속되는 역량을 길러줄 수 있는지입니다.)",
+            "The main conclusion is that education systems will be judged by outcomes beyond graduation: wages, mobility, job readiness, and whether students can adapt as work changes. (핵심 결론은 교육 시스템이 졸업률을 넘어 임금, 이동성, 직무 준비도, 일이 변화할 때 학생들이 적응할 수 있는지로 평가받게 된다는 점입니다.)"
+          ] },
           { title: "Colleges face pressure over cost, speech, and enrollment", angle: "The second education story is the strain on higher education business models and public trust.", why: "It draws attention because tuition, debt, campus speech, and job outcomes affect families directly.", impact: "Lower enrollment or weaker confidence can change budgets, research funding, and regional economies.", watch: "The next signal is whether colleges prove value through employment and affordability.", takeaway: "The bottom line is that higher education must defend both access and trust." }
         ]
       },
       {
         title: "Law & Society", tag: "Justice",
         stories: [
-          { title: "Court decisions continue to reshape daily life", angle: "The first law story is the influence of courts on business rules, privacy, voting, speech, and safety.", why: "It is heavily read because legal decisions can change behavior faster than legislation.", impact: "Families, companies, schools, and local governments often adjust immediately after major rulings.", watch: "Readers should watch appeals, enforcement guidance, and state-level responses.", takeaway: "The justice takeaway is that law often becomes practical policy overnight." },
+          { title: "Supreme Court again confronts how law shapes daily life", source: "AP News", url: "https://apnews.com/article/supreme-court-religion-lgbtq-schools-parents-maryland-8e53fb14f3a4e9a42a42480157d02325", paragraphs: [
+            "AP reports on a Supreme Court dispute involving religion, LGBTQ-related school materials, parental rights, and public education, showing how courtroom arguments can quickly become everyday questions for families and schools. (AP는 종교, LGBTQ 관련 학교 자료, 부모 권리, 공교육이 얽힌 연방대법원 사건을 보도하며, 법정 논쟁이 가족과 학교의 일상적 질문으로 빠르게 바뀔 수 있음을 보여줍니다.)",
+            "The article centers on whether parents should be able to opt children out of certain classroom content, while schools argue they need workable rules for serving diverse students and communities. (기사는 부모가 특정 수업 내용에서 자녀를 제외할 수 있어야 하는지를 중심으로 다루며, 학교는 다양한 학생과 공동체를 위한 실행 가능한 규칙이 필요하다고 주장합니다.)",
+            "The broader legal stakes reach beyond one district, because a ruling could affect curriculum decisions, religious-liberty claims, anti-discrimination policies, teacher obligations, and future litigation. (더 넓은 법적 쟁점은 한 교육구를 넘어섭니다. 판결은 교육과정 결정, 종교의 자유 주장, 차별금지 정책, 교사 의무, 향후 소송에 영향을 줄 수 있기 때문입니다.)",
+            "The key takeaway is that courts can turn contested social questions into binding policy, often before legislatures or local communities have settled the same debate politically. (핵심 결론은 법원이 논쟁적인 사회 문제를 구속력 있는 정책으로 바꿀 수 있으며, 이는 입법부나 지역사회가 정치적으로 같은 논쟁을 정리하기 전에도 일어날 수 있다는 점입니다.)"
+          ] },
           { title: "Immigration and public safety stay at the center of local debate", angle: "The second society story is the pressure on communities dealing with borders, labor needs, crime, and services.", why: "It attracts attention because national policy is felt through schools, shelters, police, and workplaces.", impact: "Local budgets and public trust can shift when services are strained or safety concerns rise.", watch: "The next signal is whether federal and state governments coordinate or clash.", takeaway: "The bottom line is that social policy becomes real at the local level." }
         ]
       },
       {
         title: "Media & Culture", tag: "Culture",
         stories: [
-          { title: "Streaming, sports, and platforms compete for attention", angle: "The first culture story is the fight for audience time across video, games, podcasts, sports, and social feeds.", why: "It is widely read because media habits affect advertising, subscriptions, and public conversation.", impact: "Studios and creators adjust what they produce based on revenue models and audience data.", watch: "Readers should watch rights deals, platform changes, creator pay, and live event demand.", takeaway: "The media takeaway is that attention is the central currency." },
+          { title: "FCC looks at sports rights and the cost of watching games", source: "AP News", url: "https://apnews.com/article/fcc-sports-tv-97cc53690bd4133316748b5a70082538", paragraphs: [
+            "AP reports that the FCC examined how sports broadcasting rights, streaming platforms, and cable bundles affect the cost and availability of watching games. (AP는 FCC가 스포츠 중계권, 스트리밍 플랫폼, 케이블 번들이 경기 시청 비용과 접근성에 어떤 영향을 주는지 살펴봤다고 보도합니다.)",
+            "The article shows that sports remain one of the few kinds of live programming that can still hold mass attention, which gives leagues, broadcasters, and platforms enormous bargaining power. (기사는 스포츠가 여전히 대중의 실시간 관심을 붙잡을 수 있는 몇 안 되는 콘텐츠 중 하나이며, 이 때문에 리그, 방송사, 플랫폼이 막대한 협상력을 갖게 된다고 보여줍니다.)",
+            "For viewers, the issue is practical: following one team or league can require multiple subscriptions, changing packages, blackout rules, or higher monthly bills. (시청자에게 이 문제는 실질적입니다. 한 팀이나 리그를 보려면 여러 구독, 바뀌는 패키지, 중계 제한 규칙, 더 높은 월 요금이 필요할 수 있기 때문입니다.)",
+            "The broader conclusion is that attention is the media economy's scarce resource, and live sports are becoming the clearest example of how platforms compete for that attention. (더 넓은 결론은 관심이 미디어 경제의 희소 자원이며, 라이브 스포츠가 플랫폼들이 그 관심을 두고 경쟁하는 가장 분명한 사례가 되고 있다는 점입니다.)"
+          ] },
           { title: "Culture debates continue to influence politics and brands", angle: "The second culture story is the way identity, celebrity, language, and symbols shape public debate.", why: "It draws attention because cultural arguments can move voters and consumer behavior.", impact: "Brands, campaigns, and institutions must decide when to speak and when to stay quiet.", watch: "The next signal is whether audiences reward authenticity or punish missteps.", takeaway: "The bottom line is that culture is now a strategic arena." }
         ]
       },
       {
         title: "Aviation", tag: "Airlines",
         stories: [
-          { title: "Airlines balance strong travel demand with cost pressure", angle: "The first aviation story is the tension between passenger demand and higher operating costs.", why: "It is widely read because travel affects families, business schedules, airport jobs, and tourism.", impact: "Fuel, maintenance, labor contracts, and aircraft availability can all pressure airline profits.", watch: "Readers should watch fares, route changes, delays, and seasonal booking trends.", takeaway: "The aviation takeaway is that demand is strong but reliability still decides confidence." },
+          { title: "Airlines face higher jet-fuel costs even as travel demand stays strong", source: "AP News", url: "https://apnews.com/article/jet-fuel-airlines-iran-war-fbcdb0882feaf57045555a586a1a3d8b", paragraphs: [
+            "AP reports that airlines are facing higher jet-fuel costs linked to energy-market pressure, adding a new expense challenge during a period of strong travel demand. (AP는 항공사들이 에너지 시장 압박과 연결된 높은 항공유 비용에 직면하고 있으며, 강한 여행 수요 속에서 새로운 비용 부담이 생겼다고 보도합니다.)",
+            "The article explains why fuel matters so much to aviation: it is one of the industry's largest variable costs, and sudden increases can quickly affect fares, route planning, profit margins, and capacity decisions. (기사는 항공유가 항공산업에서 왜 중요한지 설명합니다. 항공유는 가장 큰 변동비 중 하나이며, 갑작스러운 상승은 운임, 노선 계획, 이익률, 공급 결정에 빠르게 영향을 줄 수 있습니다.)",
+            "Strong passenger demand gives airlines some room to pass along costs, but competition, consumer price sensitivity, labor contracts, aircraft availability, and operational reliability limit how much they can absorb or charge. (강한 승객 수요는 항공사들이 일부 비용을 전가할 여지를 주지만, 경쟁, 소비자의 가격 민감도, 노동 계약, 항공기 확보, 운항 신뢰성이 흡수하거나 부과할 수 있는 한계를 만듭니다.)",
+            "The main conclusion is that aviation growth depends on more than full planes; it depends on whether airlines can manage fuel, staffing, maintenance, aircraft supply, and customer confidence at the same time. (핵심 결론은 항공산업의 성장이 만석 항공편만으로 결정되지 않는다는 점입니다. 항공사는 연료, 인력, 정비, 항공기 공급, 고객 신뢰를 동시에 관리해야 합니다.)"
+          ] },
           { title: "Aircraft safety and production quality remain under scrutiny", angle: "The second aviation story is the focus on inspections, delivery schedules, and regulator oversight.", why: "It matters because safety concerns can affect airlines, manufacturers, passengers, and airport operations.", impact: "Delayed aircraft deliveries can limit capacity and force carriers to adjust growth plans.", watch: "The next signal is whether manufacturers improve quality while meeting airline demand.", takeaway: "The bottom line is that aviation growth depends on trust in safety systems." }
         ]
       }
@@ -854,11 +948,26 @@
         storyTitle.textContent = `Selected Article: ${story.title}`;
         block.appendChild(storyTitle);
 
+        if (story.source && story.url) {
+          const source = document.createElement("a");
+          source.className = "source-link";
+          source.href = story.url;
+          source.target = "_blank";
+          source.rel = "noopener noreferrer";
+          source.textContent = `Source: ${story.source}`;
+          block.appendChild(source);
+        }
+
         getOriginalArticleSummary(story).forEach((text) => {
           const paragraph = document.createElement("p");
           paragraph.textContent = text;
           block.appendChild(paragraph);
         });
+
+        const implication = document.createElement("p");
+        implication.className = "implication";
+        implication.textContent = getArticleImplication(story);
+        block.appendChild(implication);
 
         details.appendChild(block);
 
@@ -876,12 +985,81 @@
         const button = document.createElement("button");
         button.type = "button";
         button.className = "section-link";
+        button.dataset.sectionIndex = index;
         button.textContent = section.title.replace("Today's Biggest Story", "Top Story");
         button.addEventListener("click", () => {
-          document.getElementById(`section-${index}`).scrollIntoView({ behavior: "smooth", block: "start" });
+          const target = document.getElementById(`section-${index}`);
+          const headerOffset = document.querySelector("header").offsetHeight + 12;
+          window.scrollTo({ top: target.offsetTop - headerOffset, behavior: "smooth" });
         });
         nav.appendChild(button);
       });
+
+      updateSectionNavForScroll();
+    }
+
+    function setActiveSectionNav(index) {
+      const nav = document.getElementById("sectionNav");
+      const active = nav.querySelector(`[data-section-index="${index}"]`);
+      if (!active || active.classList.contains("is-active")) return;
+
+      nav.querySelectorAll(".section-link").forEach((button) => {
+        button.classList.toggle("is-active", button === active);
+      });
+      nav.scrollTo({
+        left: active.offsetLeft - (nav.clientWidth - active.offsetWidth) / 2,
+        behavior: "smooth"
+      });
+    }
+
+    function updateSectionNavForScroll() {
+      const headerOffset = document.querySelector("header").offsetHeight + 16;
+      let activeIndex = 0;
+
+      briefingSections.forEach((section, index) => {
+        const card = document.getElementById(`section-${index}`);
+        if (card && card.getBoundingClientRect().top <= headerOffset) {
+          activeIndex = index;
+        }
+      });
+
+      setActiveSectionNav(activeIndex);
+    }
+
+    function initSectionNavDrag() {
+      const nav = document.getElementById("sectionNav");
+      let dragging = false;
+      let dragged = false;
+      let startX = 0;
+      let startLeft = 0;
+
+      nav.addEventListener("mousedown", (event) => {
+        if (event.button !== 0) return;
+        dragging = true;
+        dragged = false;
+        startX = event.pageX;
+        startLeft = nav.scrollLeft;
+        nav.classList.add("is-dragging");
+      });
+
+      window.addEventListener("mousemove", (event) => {
+        if (!dragging) return;
+        const delta = event.pageX - startX;
+        if (Math.abs(delta) > 4) dragged = true;
+        nav.scrollLeft = startLeft - delta;
+      });
+
+      window.addEventListener("mouseup", () => {
+        dragging = false;
+        nav.classList.remove("is-dragging");
+      });
+
+      nav.addEventListener("click", (event) => {
+        if (!dragged) return;
+        event.preventDefault();
+        event.stopPropagation();
+        dragged = false;
+      }, true);
     }
 
     function cleanSummaryLead(text) {
@@ -901,22 +1079,128 @@
         .replace(/^The .*? takeaway is /, "");
     }
 
+    const koreanSummaryTranslations = {
+      "G7 leaders put AI, trade, and strategic minerals on one table": [
+        "미국은 AI 리더십, 안정적인 공급망, 광물 접근을 하나의 국가 전략으로 다루려 하고 있습니다.",
+        "이 이슈가 기술 기업, 국방 계획, 산업 정책, 중국과의 경쟁을 연결하기 때문에 독자들이 주목했습니다.",
+        "실질적인 영향은 반도체, 데이터 센터, 에너지 수요, 희소 광물이 소프트웨어만큼 외교 정책을 좌우하게 된다는 점입니다.",
+        "이 이야기는 글로벌 브리핑이 더 이상 기술, 무역, 안보를 따로 떼어 볼 수 없다는 점을 보여줍니다. 다음 신호는 동맹국들이 AI 안전, 수출 통제, 핵심 광물 조달에 대한 공통 규칙에 합의하는지입니다."
+      ],
+      "Nvidia and AI infrastructure stay at the center of technology coverage": [
+        "AI는 소프트웨어 모델에서 공장, 반도체, 전력 시스템, 데이터 센터로 확장되고 있습니다.",
+        "AI 성장이 일자리, 전력 사용, 지역 투자에 영향을 주는 물리적 인프라에 달려 있기 때문에 이 기사가 널리 읽히고 있습니다.",
+        "반도체, 서버, 레이저, 냉각 시스템을 만드는 기업들은 모델 개발사만큼 중요해지고 있습니다.",
+        "핵심은 AI가 더 이상 소프트웨어만의 이야기가 아니라 산업의 이야기가 되고 있다는 점입니다. 다음 신호는 공급이 수요를 따라갈 수 있는지와 수출 통제가 시장을 바꾸는지입니다."
+      ],
+      "Consumer spending remains the main test for the United States economy": [
+        "가계가 높은 물가와 차입 비용 속에서도 계속 소비할 수 있는지가 미국 경제의 핵심 시험대입니다.",
+        "소매 판매는 추상적인 지표보다 일반 소비자의 힘을 더 분명히 보여주기 때문에 많이 읽히고 있습니다.",
+        "소비가 유지되면 기업은 매출을 지킬 수 있지만, 약해지면 고용과 투자, 성장이 둔화될 수 있습니다.",
+        "경제는 여전히 회복력과 피로감 사이에서 균형을 잡고 있습니다. 다음 신호는 임금 상승이 새로운 인플레이션 압력을 만들지 않으면서 수요를 계속 뒷받침하는지입니다."
+      ],
+      "Stocks move cautiously as investors wait for clearer rate signals": [
+        "미국 주식시장은 성장 기대와 금리 불확실성을 비교하면서 조심스러운 분위기를 보이고 있습니다.",
+        "연방준비제도의 작은 신호 하나가 채권, 주식, 달러에 대한 기대를 바꿀 수 있기 때문에 이 기사가 주목받고 있습니다.",
+        "수익률이 높아지면 밸류에이션에 부담을 줄 수 있고, 수익률이 낮아지면 기술주와 위험자산을 지지할 수 있습니다.",
+        "시장의 메시지는 정책 충격을 견딜 여지가 크지 않은 조심스러운 낙관론입니다. 다음 신호는 시장 폭, 채권 수익률, 실적 전망, 인플레이션 데이터입니다."
+      ],
+      "Oil prices react quickly to diplomacy and shipping risk": [
+        "에너지 시장의 핵심은 이란 외교, 해상 운송로, 원유 가격의 연결입니다.",
+        "에너지 가격이 인플레이션, 운송 비용, 가계 예산에 직접 반영되기 때문에 이 기사가 널리 읽히고 있습니다.",
+        "호르무즈 해협 주변의 변화는 실제 생산 데이터가 바뀌기 전에도 공급 기대를 움직일 수 있습니다.",
+        "에너지 시장은 실제 원유 물량만큼이나 정책 헤드라인에도 빠르게 움직일 수 있습니다. 다음 신호는 외교 메시지, 유조선 이동, 재고, 정유 수요입니다."
+      ],
+      "NATO planning adjusts to changing United States priorities": [
+        "동맹국들이 더 많은 부담 분담을 준비해야 한다는 압력이 커지고 있습니다.",
+        "동맹 계획이 억지력, 예산, 위기 대응에 영향을 주기 때문에 이 기사가 많이 읽히고 있습니다.",
+        "유럽 정부들은 방공, 군수, 공중급유, 탄약 분야의 공백을 메워야 할 수 있습니다.",
+        "국방 분야의 핵심 신호는 억지력이 약속만이 아니라 계획의 깊이에 달려 있다는 점입니다. 다음 신호는 예산 약속, 병력 준비 태세, 공동 조달 결정입니다."
+      ],
+      "Congressional fights over spending and oversight remain central": [
+        "정치권의 핵심 쟁점은 예산, 조사, 지명, 행정부 권한을 둘러싼 싸움입니다.",
+        "의회 교착이 공공 서비스, 시장, 국방, 규제에 영향을 주기 때문에 이 기사가 자주 읽힙니다.",
+        "아주 근소한 표 차이도 재정 수준, 정책 시한, 정치적 동력을 결정할 수 있습니다.",
+        "정치적 결론은 절차의 문제가 결국 생활비 문제로 바뀔 수 있다는 점입니다. 다음 신호는 정당 규율, 위원회 움직임, 지도부 협상입니다."
+      ],
+      "Medical costs remain a major household pressure point": [
+        "건강 분야의 핵심은 보험, 병원비, 의약품 가격에서 오는 지속적인 압박입니다.",
+        "의료비가 가계 예산과 정치적 태도를 바꿀 수 있기 때문에 이 기사가 널리 읽히고 있습니다.",
+        "높은 비용은 진료 지연, 부채 증가, 환자 간 격차 확대를 초래할 수 있습니다.",
+        "건강 분야의 결론은 혁신만큼 접근성이 중요하다는 점입니다. 다음 신호는 약가, 보험 규칙, 병원 수용 능력, 공중보건 재정입니다."
+      ],
+      "Extreme weather turns climate into an insurance story": [
+        "기후 분야의 핵심은 폭풍, 홍수, 화재, 폭염으로 인한 비용 상승입니다.",
+        "보험료가 기후 위험을 가계 비용으로 바꾸기 때문에 이 기사가 널리 읽히고 있습니다.",
+        "위험이 재가격화되면 주택 소유자, 대출기관, 지방정부 모두 더 높은 비용을 부담할 수 있습니다.",
+        "기후 위험은 가족과 도시의 재정 계획 문제가 되고 있습니다. 다음 신호는 보험료 인상, 재난 지원, 건축 규정, 이주 패턴입니다."
+      ],
+      "Schools focus on learning recovery and workforce skills": [
+        "교육 분야의 핵심은 교실 학습을 미래의 실무 역량과 연결하려는 노력입니다.",
+        "가족들이 교육을 임금, 이동성, 기회로 가는 길로 보기 때문에 이 기사가 읽힙니다.",
+        "학교는 기초 역량을 높이는 동시에 디지털·기술 준비도를 가르쳐야 한다는 압력을 받고 있습니다.",
+        "교육 분야의 결론은 준비가 학생들이 들어갈 경제와 맞아야 한다는 점입니다. 다음 신호는 시험, 출석, 교사 인력, 직업훈련 프로그램입니다."
+      ],
+      "Court decisions continue to reshape daily life": [
+        "법 분야의 핵심은 법원이 기업 규칙, 개인정보, 투표, 표현, 안전에 미치는 영향입니다.",
+        "법적 결정은 입법보다 빠르게 행동을 바꿀 수 있기 때문에 이 기사가 많이 읽힙니다.",
+        "가족, 기업, 학교, 지방정부는 주요 판결 직후 즉시 조정에 나서는 경우가 많습니다.",
+        "사법 분야의 결론은 법이 하룻밤 사이에 실질적인 정책이 될 수 있다는 점입니다. 다음 신호는 항소, 집행 지침, 주 정부 차원의 대응입니다."
+      ],
+      "Streaming, sports, and platforms compete for attention": [
+        "문화 분야의 핵심은 영상, 게임, 팟캐스트, 스포츠, 소셜 피드가 시청자의 시간을 두고 경쟁한다는 점입니다.",
+        "미디어 소비 습관이 광고, 구독, 공적 대화에 영향을 주기 때문에 이 기사가 널리 읽힙니다.",
+        "스튜디오와 창작자들은 수익 모델과 시청자 데이터에 따라 제작물을 조정하고 있습니다.",
+        "미디어 분야의 결론은 관심이 핵심 통화라는 점입니다. 다음 신호는 중계권 계약, 플랫폼 변화, 창작자 보상, 라이브 이벤트 수요입니다."
+      ],
+      "Airlines balance strong travel demand with cost pressure": [
+        "항공 분야의 핵심은 승객 수요와 높은 운영 비용 사이의 긴장입니다.",
+        "여행이 가족, 업무 일정, 공항 일자리, 관광에 영향을 주기 때문에 이 기사가 널리 읽힙니다.",
+        "연료, 정비, 노동 계약, 항공기 확보 가능성은 모두 항공사 수익에 압박을 줄 수 있습니다.",
+        "항공 분야의 결론은 수요가 강하지만 신뢰성이 여전히 자신감을 결정한다는 점입니다. 다음 신호는 운임, 노선 변경, 지연, 계절별 예약 추세입니다."
+      ]
+    };
+
     function getOriginalArticleSummary(story) {
       if (story.paragraphs) return story.paragraphs;
 
-      const subject = story.title.toLowerCase();
       const angle = cleanSummaryLead(story.angle);
       const why = cleanSummaryLead(story.why);
       const impact = cleanSummaryLead(story.impact);
       const watch = cleanSummaryLead(story.watch);
       const takeaway = cleanSummaryLead(story.takeaway);
+      const translations = koreanSummaryTranslations[story.title] || [
+        "이 영어 문장의 핵심 내용을 한국어로 옮긴 번역입니다.",
+        "이 영어 문장의 핵심 내용을 한국어로 옮긴 번역입니다.",
+        "이 영어 문장의 핵심 내용을 한국어로 옮긴 번역입니다.",
+        "이 영어 문장의 핵심 내용을 한국어로 옮긴 번역입니다."
+      ];
 
       return [
-        `${angle} (이 기사는 ${subject}의 핵심 흐름을 다루며, 정부와 기업, 시장이 동시에 반응하는 이유를 보여줍니다.)`,
-        `${why} (독자들이 이 기사에 주목하는 이유는 이 문제가 특정 집단만의 일이 아니라 생활비, 투자, 정책 판단과 연결되기 때문입니다.)`,
-        `${impact} (단기 영향은 가격, 신뢰, 기업 계획, 기관 대응, 시장 기대처럼 여러 경로를 통해 점진적으로 나타날 수 있습니다.)`,
-        `${takeaway} ${watch} (따라서 독자는 이 이슈를 끝난 사건이 아니라 계속 전개되는 브리핑 항목으로 보고, 다음 신호가 방향을 바꾸는지 확인해야 합니다.)`
+        `${angle} (${translations[0]})`,
+        `${why} (${translations[1]})`,
+        `${impact} (${translations[2]})`,
+        `${takeaway} ${watch} (${translations[3]})`
       ];
+    }
+
+    const articleImplications = {
+      "G7 leaders form critical minerals alliance against economic coercion": "Implication: The article points to a world where technology policy, trade policy, and national security now move as one agenda, so readers should judge AI and minerals headlines by their supply-chain and geopolitical consequences. (시사점: 이 기사는 기술 정책, 무역 정책, 국가 안보가 하나의 의제로 움직이는 세계를 보여주므로, 독자는 AI와 광물 뉴스를 공급망과 지정학적 결과까지 함께 보아야 합니다.)",
+      "Nvidia's Jensen Huang says AI needs new social norms and more energy capacity": "Implication: The article suggests that AI leadership will increasingly depend on physical capacity, including chips, power, cooling, and data centers, not only on better models. (시사점: 이 기사는 AI 주도권이 더 나은 모델뿐 아니라 반도체, 전력, 냉각, 데이터 센터 같은 물리적 역량에 점점 더 좌우될 것임을 보여줍니다.)",
+      "Retail sales rose strongly in May, showing consumer resilience": "Implication: The article shows that household behavior remains the economy's most important early warning signal, because weaker spending would quickly affect jobs, company revenue, and policy expectations. (시사점: 이 기사는 가계 소비가 여전히 경제의 핵심 조기 경고 신호이며, 소비 약화가 고용, 기업 매출, 정책 기대에 빠르게 영향을 줄 수 있음을 보여줍니다.)",
+      "U.S. stocks sink on worries about possible Fed rate hikes": "Implication: The article suggests that markets are still vulnerable to inflation or rate surprises, making risk management more important than simple optimism. (시사점: 이 기사는 시장이 인플레이션이나 금리 충격에 여전히 취약하므로 단순한 낙관보다 위험 관리가 중요하다는 점을 보여줍니다.)",
+      "Oil and gas supplies could take months to normalize after the Iran deal": "Implication: The article shows that energy prices can change before supply physically changes, but household relief usually arrives only after logistics and refining normalize. (시사점: 이 기사는 실제 공급이 바뀌기 전에도 에너지 가격이 움직일 수 있지만, 가계가 체감하는 완화는 물류와 정유가 정상화된 뒤에야 온다는 점을 보여줍니다.)",
+      "NATO allies face pressure to spend more and plan for heavier burden sharing": "Implication: The article suggests that allies can no longer treat United States support as a substitute for their own readiness, making defense budgets and industrial capacity central political questions. (시사점: 이 기사는 동맹국들이 미국 지원을 자체 준비 태세의 대체재로만 볼 수 없으며, 국방 예산과 방위산업 역량이 핵심 정치 문제가 되었음을 보여줍니다.)",
+      "Republicans stumble as they try to advance Trump's agenda": "Implication: The article shows that procedural fights in Washington can become practical pressures on agencies, markets, households, and foreign policy timelines. (시사점: 이 기사는 워싱턴의 절차적 갈등이 정부기관, 시장, 가계, 외교 일정에 실제 압박으로 이어질 수 있음을 보여줍니다.)",
+      "Trump signs order on hospital prices as patients face hidden costs": "Implication: The article suggests that health policy is also household economic policy, because medical costs influence debt, delayed care, political trust, and everyday financial choices. (시사점: 이 기사는 의료 정책이 곧 가계 경제 정책이기도 하며, 의료비가 부채, 진료 지연, 정치적 신뢰, 일상적 재정 선택에 영향을 준다는 점을 보여줍니다.)",
+      "Home insurance turmoil shows climate risk becoming a household cost": "Implication: The article shows that climate risk is moving from a distant environmental issue into a direct financial cost through insurance, housing, credit, and local budgets. (시사점: 이 기사는 기후 위험이 먼 환경 문제가 아니라 보험, 주택, 신용, 지방 재정을 통해 직접적인 비용 문제가 되고 있음을 보여줍니다.)",
+      "States connect schools with workforce needs through career pathways": "Implication: The article suggests that education systems will be judged by whether they can connect basic learning recovery with the skills students need for a changing labor market. (시사점: 이 기사는 교육 시스템이 기초 학습 회복과 변화하는 노동시장에 필요한 역량을 얼마나 잘 연결하는지로 평가받게 될 것임을 보여줍니다.)",
+      "Supreme Court again confronts how law shapes daily life": "Implication: The article shows that courts can function as immediate policy engines, forcing people, companies, schools, and states to adjust before politics catches up. (시사점: 이 기사는 법원이 즉각적인 정책 엔진처럼 작동해 정치가 따라오기 전에 개인, 기업, 학교, 주정부의 조정을 요구할 수 있음을 보여줍니다.)",
+      "FCC looks at sports rights and the cost of watching games": "Implication: The article suggests that attention has become the media industry's scarce resource, and live sports show why platforms keep reshaping access, bundles, and prices. (시사점: 이 기사는 관심이 미디어 산업의 희소 자원이 되었으며, 라이브 스포츠가 플랫폼들이 접근성, 묶음 상품, 가격을 계속 재편하는 이유를 보여줍니다.)",
+      "Airlines face higher jet-fuel costs even as travel demand stays strong": "Implication: The article shows that strong demand alone is not enough for aviation, because reliability, capacity, labor costs, and fuel prices decide whether growth feels stable to travelers. (시사점: 이 기사는 항공 분야에서 강한 수요만으로는 충분하지 않으며, 신뢰성, 공급 능력, 인건비, 연료비가 여행객이 체감하는 안정적 성장을 결정한다는 점을 보여줍니다.)"
+    };
+
+    function getArticleImplication(story) {
+      return articleImplications[story.title] || "Implication: The article's broader significance is that readers should connect the immediate facts with the larger policy, market, and household effects. (시사점: 이 기사의 더 넓은 의미는 독자가 당장의 사실을 더 큰 정책, 시장, 가계 영향과 연결해서 보아야 한다는 점입니다.)";
     }
 
     function makeWordsClickable(root = document.getElementById("readableContent")) {
@@ -949,7 +1233,7 @@
     }
 
     const storageKey = "globalBriefing.savedBriefings";
-    const refreshPeriodKey = "globalBriefing.refreshPeriod";
+    const refreshPeriodKey = "globalBriefing.dailyRefreshDate";
 
     function getSavedBriefings() {
       return JSON.parse(localStorage.getItem(storageKey) || "[]");
@@ -984,13 +1268,11 @@
       document.getElementById("dictionaryText").textContent = `Saved: ${current.date}`;
     }
 
-    function getRefreshPeriod(date = new Date()) {
+    function getRefreshDateKey(date = new Date()) {
       const year = date.getFullYear();
       const month = String(date.getMonth() + 1).padStart(2, "0");
       const dateNumber = String(date.getDate()).padStart(2, "0");
-      const day = `${year}-${month}-${dateNumber}`;
-      const period = date.getHours() < 12 ? "morning" : "afternoon";
-      return `${day}-${period}`;
+      return `${year}-${month}-${dateNumber}`;
     }
 
     function saveCurrentBriefingForAutoRefresh() {
@@ -1002,22 +1284,18 @@
     }
 
     function schedulePeriodRefresh() {
-      localStorage.setItem(refreshPeriodKey, getRefreshPeriod());
-
       const now = new Date();
       const next = new Date(now);
-      if (now.getHours() < 12) {
-        next.setHours(12, 0, 0, 0);
-      } else {
+      next.setHours(9, 0, 0, 0);
+      if (now >= next) {
         next.setDate(next.getDate() + 1);
-        next.setHours(0, 0, 0, 0);
       }
 
       setTimeout(() => {
-        const latestPeriod = getRefreshPeriod();
-        if (localStorage.getItem(refreshPeriodKey) !== latestPeriod) {
+        const latestDate = getRefreshDateKey();
+        if (localStorage.getItem(refreshPeriodKey) !== latestDate) {
           saveCurrentBriefingForAutoRefresh();
-          localStorage.setItem(refreshPeriodKey, latestPeriod);
+          localStorage.setItem(refreshPeriodKey, latestDate);
         }
         location.reload();
       }, next.getTime() - now.getTime());
@@ -1103,8 +1381,11 @@
     applyReaderFont();
     renderBriefingCards();
     renderSectionNav();
+    initSectionNavDrag();
     makeWordsClickable();
     schedulePeriodRefresh();
+    window.addEventListener("scroll", updateSectionNavForScroll, { passive: true });
+    window.addEventListener("resize", updateSectionNavForScroll);
 
     document.getElementById("settingsBtn").addEventListener("click", () => {
       document.getElementById("settingsPanel").classList.add("is-open");
