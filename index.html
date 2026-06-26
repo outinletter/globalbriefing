@@ -8,6 +8,13 @@
   <meta name="application-name" content="Global Briefing">
   <link rel="apple-touch-icon" sizes="512x512" href="globalbriefing.png">
   <link rel="icon" type="image/png" sizes="512x512" href="globalbriefing.png">
+  <script type="importmap">
+    {
+      "imports": {
+        "@google/generative-ai": "https://esm.run/@google/generative-ai"
+      }
+    }
+  </script>
   <style>
     :root {
       --bg: #f7f4ee;
@@ -417,6 +424,13 @@
       <h1>Today's Global Briefing</h1>
       <nav class="section-nav" id="sectionNav" aria-label="Briefing sections"></nav>
       <div class="nav-actions" id="settingsPanel">
+        <button class="action-btn" id="updateNewsBtn" type="button" aria-label="Update news via Gemini">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M23 4v6h-6"></path>
+            <path d="M1 20v-6h6"></path>
+            <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
+          </svg>
+        </button>
         <button class="action-btn" id="saveBriefingBtn" type="button" aria-label="Save briefing">
           <svg viewBox="0 0 24 24" aria-hidden="true">
             <path d="M5 4h11l3 3v13H5z"></path>
@@ -758,7 +772,7 @@
       selected: "선정된", article: "기사"
     });
 
-    const briefingSections = [
+    let briefingSections = [
       {
         title: "Today's Biggest Story", tag: "Lead", hero: true,
         stories: [
@@ -963,11 +977,6 @@
           paragraph.textContent = text;
           block.appendChild(paragraph);
         });
-
-        const implication = document.createElement("p");
-        implication.className = "implication";
-        implication.textContent = getArticleImplication(story);
-        block.appendChild(implication);
 
         details.appendChild(block);
 
@@ -1234,6 +1243,62 @@
 
     const storageKey = "globalBriefing.savedBriefings";
     const refreshPeriodKey = "globalBriefing.dailyRefreshDate";
+    const geminiKeyStorage = "globalBriefing.geminiKey";
+
+    async function updateNewsWithGemini() {
+      let apiKey = localStorage.getItem(geminiKeyStorage);
+      if (!apiKey) {
+        apiKey = prompt("Please enter your Gemini API Key to enable daily updates:");
+        if (apiKey) localStorage.setItem(geminiKeyStorage, apiKey);
+        else return;
+      }
+
+      document.getElementById("dictionaryText").textContent = "Updating news via Gemini API... Please wait.";
+
+      try {
+        const { GoogleGenerativeAI } = await import("@google/generative-ai");
+        const genAI = new GoogleGenerativeAI(apiKey);
+        const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+
+        const promptText = `Today is ${new Date().toDateString()}.
+        Generate a comprehensive global news briefing in JSON format.
+        Provide 13 sections: Lead (Today's Biggest Story), Tech (AI & Technology), Macro (Economy), Markets (Finance), Energy (Energy), Security (Defense), Power (Politics), Health (Health), Climate (Climate), Schools (Education), Justice (Law & Society), Culture (Media & Culture), Airlines (Aviation).
+
+        Requirements for each section:
+        1. title: The category name.
+        2. tag: The short tag.
+        3. hero: true for the first section only, false for others.
+        4. stories: Array with ONE object:
+           - title: A real, specific headline from today's news.
+           - source: The news outlet.
+           - url: Link to the article (or a search link).
+           - paragraphs: Array of 4 strings. Each string must be a detailed English summary (2+ sentences) followed by its Korean translation in parentheses.
+
+        Format as a JSON array ONLY. Do not include markdown formatting like \`\`\`json.`;
+
+        const result = await model.generateContent(promptText);
+        const responseText = result.response.text().trim();
+        const cleanedJson = responseText.replace(/```json|```/g, "").trim();
+        const newData = JSON.parse(cleanedJson);
+
+        if (Array.isArray(newData)) {
+          briefingSections = newData;
+          renderBriefingCards();
+          renderSectionNav();
+          makeWordsClickable();
+
+          const today = getRefreshDateKey();
+          localStorage.setItem(refreshPeriodKey, today);
+          document.getElementById("dictionaryText").textContent = `Update complete: ${new Date().toLocaleTimeString()}`;
+        }
+      } catch (error) {
+        console.error("Gemini Update Error:", error);
+        document.getElementById("dictionaryText").textContent = "Update failed. Check console or API key.";
+        if (error.message.includes("401") || error.message.includes("key")) {
+          localStorage.removeItem(geminiKeyStorage);
+        }
+      }
+    }
 
     function getSavedBriefings() {
       return JSON.parse(localStorage.getItem(storageKey) || "[]");
@@ -1286,7 +1351,7 @@
     function schedulePeriodRefresh() {
       const now = new Date();
       const next = new Date(now);
-      next.setHours(9, 0, 0, 0);
+      next.setHours(8, 0, 0, 0);
       if (now >= next) {
         next.setDate(next.getDate() + 1);
       }
@@ -1400,6 +1465,7 @@
       document.getElementById("dictionaryText").textContent = `${word.dataset.word}: ${findMeaning(word.dataset.word)}`;
     });
 
+    document.getElementById("updateNewsBtn").addEventListener("click", updateNewsWithGemini);
     document.getElementById("saveBriefingBtn").addEventListener("click", saveCurrentBriefing);
     document.getElementById("showSavedBtn").addEventListener("click", showSavedView);
     document.getElementById("decreaseTextBtn").addEventListener("click", () => changeReaderSize(-0.04));
