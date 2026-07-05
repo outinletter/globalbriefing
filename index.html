@@ -1293,9 +1293,13 @@
         }
       } catch (error) {
         console.error("Gemini Update Error:", error);
-        document.getElementById("dictionaryText").textContent = "Update failed. Check console or API key.";
-        if (error.message.includes("401") || error.message.includes("key")) {
+        const errorMsg = error.message ? error.message.toLowerCase() : "";
+        if (errorMsg.includes("401") || errorMsg.includes("key") || errorMsg.includes("unauthorized")) {
           localStorage.removeItem(geminiKeyStorage);
+          alert("The API key is invalid or expired. Please enter a valid Gemini API Key.");
+          updateNewsWithGemini(); // 재입력 창을 띄우기 위해 함수 재호출
+        } else {
+          document.getElementById("dictionaryText").textContent = "Update failed. Check your internet connection.";
         }
       }
     }
