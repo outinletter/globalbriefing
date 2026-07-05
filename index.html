@@ -957,6 +957,10 @@ ${article.text}`;
     async function updateBriefingFromApis({ allowPrompt = true, auto = false } = {}) {
       const keys = getApiKeys(allowPrompt);
       const statusEl = document.getElementById("dictionaryText");
+      if (window.location.protocol === "file:") {
+        statusEl.textContent = "Open this app through a local server, not file://, before updating with APIs.";
+        return false;
+      }
       if (!keys) {
         statusEl.textContent = "API keys are required to update the briefing.";
         return false;
