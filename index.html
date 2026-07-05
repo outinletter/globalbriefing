@@ -1300,7 +1300,14 @@
         const result = await model.generateContent(promptText);
         const responseText = result.response.text().trim();
         const cleanedJson = responseText.replace(/```json|```/g, "").trim();
-        const newData = JSON.parse(cleanedJson);
+
+        let newData;
+        try {
+          newData = JSON.parse(cleanedJson);
+        } catch (e) {
+          console.error("JSON Parsing Error:", cleanedJson);
+          throw new Error("AI response format error. Please try again.");
+        }
 
         if (Array.isArray(newData)) {
           briefingSections = newData;
@@ -1319,8 +1326,10 @@
           localStorage.removeItem(geminiKeyStorage);
           alert("The API key is invalid or expired. Please enter a valid Gemini API Key.");
           updateNewsWithGemini(); // 재입력 창을 띄우기 위해 함수 재호출
+        } else if (errorMsg.includes("fetch") || errorMsg.includes("network")) {
+          document.getElementById("dictionaryText").textContent = "Network Error: Check internet or CORS policy.";
         } else {
-          document.getElementById("dictionaryText").textContent = "Update failed. Check your internet connection.";
+          document.getElementById("dictionaryText").textContent = `Error: ${error.message.substring(0, 50)}`;
         }
       }
     }
