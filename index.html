@@ -8,13 +8,6 @@
   <meta name="application-name" content="Global Briefing">
   <link rel="apple-touch-icon" sizes="512x512" href="globalbriefing.png">
   <link rel="icon" type="image/png" sizes="512x512" href="globalbriefing.png">
-  <script type="importmap">
-    {
-      "imports": {
-        "@google/generative-ai": "https://esm.run/@google/generative-ai"
-      }
-    }
-  </script>
   <style>
     :root {
       --bg: #f7f4ee;
@@ -424,20 +417,6 @@
       <h1>Today's Global Briefing</h1>
       <nav class="section-nav" id="sectionNav" aria-label="Briefing sections"></nav>
       <div class="nav-actions" id="settingsPanel">
-        <button class="action-btn" id="updateNewsBtn" type="button" aria-label="Update news via Gemini">
-          <svg viewBox="0 0 24 24" aria-hidden="true">
-            <path d="M23 4v6h-6"></path>
-            <path d="M1 20v-6h6"></path>
-            <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
-          </svg>
-        </button>
-        <button class="action-btn" id="setApiKeyBtn" type="button" aria-label="Set Gemini API Key">
-          <svg viewBox="0 0 24 24" aria-hidden="true">
-            <circle cx="7.5" cy="15.5" r="5.5"></circle>
-            <path d="M21 2l-9.6 9.6"></path>
-            <path d="M15.5 7.5l3 3L22 7l-3-3"></path>
-          </svg>
-        </button>
         <button class="action-btn" id="saveBriefingBtn" type="button" aria-label="Save briefing">
           <svg viewBox="0 0 24 24" aria-hidden="true">
             <path d="M5 4h11l3 3v13H5z"></path>
@@ -1250,97 +1229,6 @@
 
     const storageKey = "globalBriefing.savedBriefings";
     const refreshPeriodKey = "globalBriefing.dailyRefreshDate";
-    const geminiKeyStorage = "globalBriefing.geminiKey";
-
-    function promptForApiKey() {
-      const currentKey = localStorage.getItem(geminiKeyStorage) || "";
-      const newKey = prompt("Enter your Gemini API Key:", currentKey);
-      if (newKey !== null) {
-        if (newKey.trim()) {
-          localStorage.setItem(geminiKeyStorage, newKey.trim());
-          document.getElementById("dictionaryText").textContent = "API Key updated.";
-        } else {
-          localStorage.removeItem(geminiKeyStorage);
-          document.getElementById("dictionaryText").textContent = "API Key removed.";
-        }
-      }
-    }
-
-    async function updateNewsWithGemini() {
-      let apiKey = localStorage.getItem(geminiKeyStorage);
-      if (!apiKey) {
-        apiKey = prompt("Please enter your Gemini API Key to enable daily updates:");
-        if (apiKey) localStorage.setItem(geminiKeyStorage, apiKey);
-        else return;
-      }
-
-      const statusEl = document.getElementById("dictionaryText");
-      statusEl.textContent = "Step 1/3: Connecting to Gemini AI...";
-
-      try {
-        if (window.location.protocol === 'file:') {
-          statusEl.textContent = "Error: Cannot run API on local file. Please use a Local Server (e.g. Live Server).";
-          return;
-        }
-
-        const { GoogleGenerativeAI } = await import("@google/generative-ai");
-        const genAI = new GoogleGenerativeAI(apiKey);
-        const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
-
-        statusEl.textContent = "Step 2/3: Fetching latest news summaries...";
-        const promptText = `Today is ${new Date().toDateString()}.
-        Generate a comprehensive global news briefing in JSON format.
-        Provide 13 sections: Lead (Today's Biggest Story), Tech (AI & Technology), Macro (Economy), Markets (Finance), Energy (Energy), Security (Defense), Power (Politics), Health (Health), Climate (Climate), Schools (Education), Justice (Law & Society), Culture (Media & Culture), Airlines (Aviation).
-
-        Requirements for each section:
-        1. title: The category name.
-        2. tag: The short tag.
-        3. hero: true for the first section only, false for others.
-        4. stories: Array with ONE object:
-           - title: A real, specific headline from today's news.
-           - source: The news outlet.
-           - url: Link to the article (or a search link).
-           - paragraphs: Array of 4 strings. Each string must be a detailed English summary (2+ sentences) followed by its Korean translation in parentheses.
-
-        Format as a JSON array ONLY. Do not include markdown formatting like \`\`\`json.`;
-
-        const result = await model.generateContent(promptText);
-        const responseText = result.response.text().trim();
-        const cleanedJson = responseText.replace(/```json|```/g, "").trim();
-
-        statusEl.textContent = "Step 3/3: Processing news data...";
-        let newData;
-        try {
-          newData = JSON.parse(cleanedJson);
-        } catch (e) {
-          console.error("JSON Parsing Error:", cleanedJson);
-          throw new Error("AI response format error. Please try again.");
-        }
-
-        if (Array.isArray(newData)) {
-          briefingSections = newData;
-          renderBriefingCards();
-          renderSectionNav();
-          makeWordsClickable();
-
-          const today = getRefreshDateKey();
-          localStorage.setItem(refreshPeriodKey, today);
-          statusEl.textContent = `Update complete: ${new Date().toLocaleTimeString()}`;
-        }
-      } catch (error) {
-        console.error("Gemini Update Error:", error);
-        const errorMsg = error.message ? error.message.toLowerCase() : "";
-        if (errorMsg.includes("401") || errorMsg.includes("key") || errorMsg.includes("unauthorized")) {
-          localStorage.removeItem(geminiKeyStorage);
-          alert("The API key is invalid or expired. Please enter a valid Gemini API Key.");
-          updateNewsWithGemini(); // 재입력 창을 띄우기 위해 함수 재호출
-        } else if (errorMsg.includes("fetch") || errorMsg.includes("network") || errorMsg.includes("failed to fetch")) {
-          statusEl.textContent = "Network Error: Check internet or CORS policy. Try using a Local Server.";
-        } else {
-          statusEl.textContent = `Error: ${error.message.substring(0, 50)}`;
-        }
-      }
-    }
 
     function getSavedBriefings() {
       return JSON.parse(localStorage.getItem(storageKey) || "[]");
@@ -1507,8 +1395,6 @@
       document.getElementById("dictionaryText").textContent = `${word.dataset.word}: ${findMeaning(word.dataset.word)}`;
     });
 
-    document.getElementById("updateNewsBtn").addEventListener("click", updateNewsWithGemini);
-    document.getElementById("setApiKeyBtn").addEventListener("click", promptForApiKey);
     document.getElementById("saveBriefingBtn").addEventListener("click", saveCurrentBriefing);
     document.getElementById("showSavedBtn").addEventListener("click", showSavedView);
     document.getElementById("decreaseTextBtn").addEventListener("click", () => changeReaderSize(-0.04));
