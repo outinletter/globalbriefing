@@ -1274,13 +1274,20 @@
         else return;
       }
 
-      document.getElementById("dictionaryText").textContent = "Updating news via Gemini API... Please wait.";
+      const statusEl = document.getElementById("dictionaryText");
+      statusEl.textContent = "Step 1/3: Connecting to Gemini AI...";
 
       try {
+        if (window.location.protocol === 'file:') {
+          statusEl.textContent = "Error: Cannot run API on local file. Please use a Local Server (e.g. Live Server).";
+          return;
+        }
+
         const { GoogleGenerativeAI } = await import("@google/generative-ai");
         const genAI = new GoogleGenerativeAI(apiKey);
         const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
+        statusEl.textContent = "Step 2/3: Fetching latest news summaries...";
         const promptText = `Today is ${new Date().toDateString()}.
         Generate a comprehensive global news briefing in JSON format.
         Provide 13 sections: Lead (Today's Biggest Story), Tech (AI & Technology), Macro (Economy), Markets (Finance), Energy (Energy), Security (Defense), Power (Politics), Health (Health), Climate (Climate), Schools (Education), Justice (Law & Society), Culture (Media & Culture), Airlines (Aviation).
@@ -1301,6 +1308,7 @@
         const responseText = result.response.text().trim();
         const cleanedJson = responseText.replace(/```json|```/g, "").trim();
 
+        statusEl.textContent = "Step 3/3: Processing news data...";
         let newData;
         try {
           newData = JSON.parse(cleanedJson);
@@ -1317,7 +1325,7 @@
 
           const today = getRefreshDateKey();
           localStorage.setItem(refreshPeriodKey, today);
-          document.getElementById("dictionaryText").textContent = `Update complete: ${new Date().toLocaleTimeString()}`;
+          statusEl.textContent = `Update complete: ${new Date().toLocaleTimeString()}`;
         }
       } catch (error) {
         console.error("Gemini Update Error:", error);
@@ -1326,10 +1334,10 @@
           localStorage.removeItem(geminiKeyStorage);
           alert("The API key is invalid or expired. Please enter a valid Gemini API Key.");
           updateNewsWithGemini(); // 재입력 창을 띄우기 위해 함수 재호출
-        } else if (errorMsg.includes("fetch") || errorMsg.includes("network")) {
-          document.getElementById("dictionaryText").textContent = "Network Error: Check internet or CORS policy.";
+        } else if (errorMsg.includes("fetch") || errorMsg.includes("network") || errorMsg.includes("failed to fetch")) {
+          statusEl.textContent = "Network Error: Check internet or CORS policy. Try using a Local Server.";
         } else {
-          document.getElementById("dictionaryText").textContent = `Error: ${error.message.substring(0, 50)}`;
+          statusEl.textContent = `Error: ${error.message.substring(0, 50)}`;
         }
       }
     }
