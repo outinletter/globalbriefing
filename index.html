@@ -589,6 +589,7 @@
     }
 
     const apiUrlStorageKey = "globalBriefing.apiUrl";
+    const lastDataHashKey = "globalBriefing.lastDataHash";
 
     async function loadBriefingFromApi(url) {
       if (!url) {
@@ -610,7 +611,20 @@
         }
 
         if (fetchedSections) {
+          // 데이터 변동 사항 체크 (단순 문자열 비교)
+          const currentDataStr = JSON.stringify(fetchedSections);
+          const lastDataHash = localStorage.getItem(lastDataHashKey);
+
+          if (lastDataHash === currentDataStr) {
+            console.log("API 데이터 변동 없음");
+            document.getElementById("dictionaryText").textContent = "API: 현재 최신 상태입니다. (변동 사항 없음)";
+            document.getElementById("apiStatusLight").style.background = "#4caf50";
+            return;
+          }
+
           briefingSections = fetchedSections;
+          localStorage.setItem(lastDataHashKey, currentDataStr);
+
           renderBriefingCards();
           renderSectionNav();
           makeWordsClickable();
