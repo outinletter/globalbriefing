@@ -458,10 +458,15 @@
             </svg>
           </button>
         </div>
-        <div style="display: flex; gap: 4px; align-items: center; margin-top: 4px; width: 100%;">
-          <div id="apiStatusLight" style="width: 8px; height: 8px; border-radius: 50%; background: #ccc; flex-shrink: 0;" title="API 상태"></div>
-          <input type="text" id="apiUrlInput" placeholder="API URL 입력" aria-label="API URL" style="width: 140px; font-family: Arial, Helvetica, sans-serif; font-size: 0.68rem; padding: 4px 6px; border: 1px solid var(--line); background: var(--card); color: var(--text);" />
-          <button type="button" id="updateApiBtn" style="font-family: Arial, Helvetica, sans-serif; font-size: 0.68rem; font-weight: 800; padding: 4px 6px; border: 1px solid var(--line); background: var(--text); color: var(--bg); text-transform: uppercase; cursor: pointer;">업데이트</button>
+        <div style="display: flex; flex-direction: column; gap: 4px; margin-top: 6px; width: 100%;">
+          <div style="display: flex; gap: 4px; align-items: center;">
+            <div id="apiStatusLight" style="width: 8px; height: 8px; border-radius: 50%; background: #ccc; flex-shrink: 0;" title="API 상태"></div>
+            <input type="text" id="apiUrlInput" placeholder="API URL 입력" aria-label="API URL" style="flex: 1; font-family: Arial, Helvetica, sans-serif; font-size: 0.65rem; padding: 4px 6px; border: 1px solid var(--line); background: var(--card); color: var(--text);" />
+          </div>
+          <div style="display: flex; gap: 4px; align-items: center;">
+            <input type="password" id="apiKeyInput" placeholder="API Key 입력" aria-label="API Key" style="flex: 1; font-family: Arial, Helvetica, sans-serif; font-size: 0.65rem; padding: 4px 6px; border: 1px solid var(--line); background: var(--card); color: var(--text);" />
+            <button type="button" id="updateApiBtn" style="font-family: Arial, Helvetica, sans-serif; font-size: 0.65rem; font-weight: 800; padding: 4px 6px; border: 1px solid var(--line); background: var(--text); color: var(--bg); text-transform: uppercase; cursor: pointer; white-space: nowrap;">업데이트</button>
+          </div>
         </div>
       </div>
       <button class="action-btn settings-btn" id="settingsBtn" type="button" aria-label="Open settings">
@@ -589,11 +594,12 @@
     }
 
     const apiUrlStorageKey = "globalBriefing.apiUrl";
+    const apiKeyStorageKey = "globalBriefing.apiKey";
     const lastDataHashKey = "globalBriefing.lastDataHash";
     const lastUpdateTimestampKey = "globalBriefing.lastUpdateTimestamp";
     const UPDATE_COOLDOWN = 6 * 60 * 60 * 1000; // 6시간 (밀리초 단위)
 
-    async function loadBriefingFromApi(url, isManual = false) {
+    async function loadBriefingFromApi(url, key, isManual = false) {
       if (!url) {
         document.getElementById("apiStatusLight").style.background = "#ccc";
         return;
@@ -603,18 +609,20 @@
       const lastUpdate = Number(localStorage.getItem(lastUpdateTimestampKey) || "0");
       const now = Date.now();
 
-      if (now - lastUpdate < UPDATE_COOLDOWN) {
+      if (!isManual && (now - lastUpdate < UPDATE_COOLDOWN)) {
         const remainingHours = ((UPDATE_COOLDOWN - (now - lastUpdate)) / (1000 * 60 * 60)).toFixed(1);
-        const msg = `API: 업데이트 후 ${remainingHours}시간이 지나야 재업데이트가 가능합니다.`;
-        console.log(msg);
-        if (isManual) {
-          document.getElementById("dictionaryText").textContent = msg;
-        }
+        console.log(`자동 업데이트 대기 중: ${remainingHours}시간 후 가능`);
         return;
       }
 
       try {
-        const response = await fetch(url);
+        const headers = {};
+        if (key) {
+          headers["Authorization"] = `Bearer ${key}`;
+          headers["Content-Type"] = "application/json";
+        }
+
+        const response = await fetch(url, { headers });
         if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
         const data = await response.json();
 
@@ -628,12 +636,10 @@
         }
 
         if (fetchedSections) {
-          // 데이터 변동 사항 체크 (단순 문자열 비교)
           const currentDataStr = JSON.stringify(fetchedSections);
           const lastDataHash = localStorage.getItem(lastDataHashKey);
 
           if (lastDataHash === currentDataStr) {
-            console.log("API 데이터 변동 없음");
             document.getElementById("dictionaryText").textContent = "API: 현재 최신 상태입니다. (변동 사항 없음)";
             document.getElementById("apiStatusLight").style.background = "#4caf50";
             return;
@@ -641,18 +647,29 @@
 
           briefingSections = fetchedSections;
           localStorage.setItem(lastDataHashKey, currentDataStr);
-          localStorage.setItem(lastUpdateTimestampKey, now.toString()); // 성공적인 데이터 갱신 시점 저장
+          localStorage.setItem(lastUpdateTimestampKey, now.toString());
 
           renderBriefingCards();
           renderSectionNav();
           makeWordsClickable();
-          updateBriefingDate(); // API 데이터 로드 시 날짜 텍스트 갱신
+          updateBriefingDate();
           document.getElementById("dictionaryText").textContent = "API: 브리핑 데이터가 성공적으로 업데이트되었습니다.";
-          document.getElementById("apiStatusLight").style.background = "#4caf50"; // Green light
+          document.getElementById("apiStatusLight").style.background = "#4caf50";
+
+          // 성공 시 API Key 필드를 마스킹된 상태로 유지 (UI 개선)
+          if (key) {
+            document.getElementById("apiKeyInput").type = "password";
+          }
         } else {
           document.getElementById("dictionaryText").textContent = "API 오류: 올바르지 않은 데이터 형식입니다.";
-          document.getElementById("apiStatusLight").style.background = "#f44336"; // Red light
+          document.getElementById("apiStatusLight").style.background = "#f44336";
         }
+      } catch (error) {
+        console.error("API fetch error:", error);
+        document.getElementById("dictionaryText").textContent = `API 오류: ${error.message}`;
+        document.getElementById("apiStatusLight").style.background = "#f44336";
+      }
+    }
       } catch (error) {
         console.error("API fetch error:", error);
         document.getElementById("dictionaryText").textContent = `API 오류: ${error.message}`;
@@ -1231,16 +1248,25 @@
     window.addEventListener("resize", updateSectionNavForScroll);
 
     const savedApiUrl = localStorage.getItem(apiUrlStorageKey) || "";
+    const savedApiKey = localStorage.getItem(apiKeyStorageKey) || "";
+
     if (savedApiUrl) {
       document.getElementById("apiUrlInput").value = savedApiUrl;
-      loadBriefingFromApi(savedApiUrl);
+    }
+    if (savedApiKey) {
+      document.getElementById("apiKeyInput").value = savedApiKey;
+    }
+    if (savedApiUrl) {
+      loadBriefingFromApi(savedApiUrl, savedApiKey);
     }
 
     document.getElementById("updateApiBtn").addEventListener("click", () => {
       const url = document.getElementById("apiUrlInput").value.trim();
+      const key = document.getElementById("apiKeyInput").value.trim();
       localStorage.setItem(apiUrlStorageKey, url);
+      localStorage.setItem(apiKeyStorageKey, key);
       if (url) {
-        loadBriefingFromApi(url, true);
+        loadBriefingFromApi(url, key, true);
       } else {
         document.getElementById("dictionaryText").textContent = "API URL이 비워졌습니다.";
       }
