@@ -590,12 +590,29 @@
 
     const apiUrlStorageKey = "globalBriefing.apiUrl";
     const lastDataHashKey = "globalBriefing.lastDataHash";
+    const lastUpdateTimestampKey = "globalBriefing.lastUpdateTimestamp";
+    const UPDATE_COOLDOWN = 6 * 60 * 60 * 1000; // 6시간 (밀리초 단위)
 
-    async function loadBriefingFromApi(url) {
+    async function loadBriefingFromApi(url, isManual = false) {
       if (!url) {
         document.getElementById("apiStatusLight").style.background = "#ccc";
         return;
       }
+
+      // 업데이트 쿨다운 체크
+      const lastUpdate = Number(localStorage.getItem(lastUpdateTimestampKey) || "0");
+      const now = Date.now();
+
+      if (now - lastUpdate < UPDATE_COOLDOWN) {
+        const remainingHours = ((UPDATE_COOLDOWN - (now - lastUpdate)) / (1000 * 60 * 60)).toFixed(1);
+        const msg = `API: 업데이트 후 ${remainingHours}시간이 지나야 재업데이트가 가능합니다.`;
+        console.log(msg);
+        if (isManual) {
+          document.getElementById("dictionaryText").textContent = msg;
+        }
+        return;
+      }
+
       try {
         const response = await fetch(url);
         if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
@@ -624,6 +641,7 @@
 
           briefingSections = fetchedSections;
           localStorage.setItem(lastDataHashKey, currentDataStr);
+          localStorage.setItem(lastUpdateTimestampKey, now.toString()); // 성공적인 데이터 갱신 시점 저장
 
           renderBriefingCards();
           renderSectionNav();
@@ -1222,7 +1240,7 @@
       const url = document.getElementById("apiUrlInput").value.trim();
       localStorage.setItem(apiUrlStorageKey, url);
       if (url) {
-        loadBriefingFromApi(url);
+        loadBriefingFromApi(url, true);
       } else {
         document.getElementById("dictionaryText").textContent = "API URL이 비워졌습니다.";
       }
