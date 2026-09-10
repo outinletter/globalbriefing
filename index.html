@@ -511,6 +511,7 @@
     const dbName = "GlobalBriefingDB";
     const storeName = "dictionary";
     let db = null;
+    let fallbackDictionary = {};
 
     function openDB() {
       return new Promise((resolve, reject) => {
@@ -560,12 +561,25 @@
         await openDB();
         const response = await fetch("dictionary.json");
         if (response.ok) {
-          const wordsData = await response.json();
-          await saveWordsToDB(wordsData);
-          console.log("IndexedDB 사전 데이터베이스가 성공적으로 구축/동기화되었습니다.");
+          fallbackDictionary = await response.json();
+          // IndexedDB에 데이터가 없는 경우에만 저장 (성능 최적화)
+          const count = await new Promise((resolve) => {
+            if (!db) return resolve(0);
+            const transaction = db.transaction([storeName], "readonly");
+            const request = transaction.objectStore(storeName).count();
+            request.onsuccess = () => resolve(request.result);
+            request.onerror = () => resolve(0);
+          });
+
+          if (count === 0) {
+            await saveWordsToDB(fallbackDictionary);
+            console.log("IndexedDB 사전 데이터베이스 구축 완료.");
+          } else {
+            console.log("IndexedDB 사전이 이미 존재합니다.");
+          }
         }
       } catch (error) {
-        console.error("IndexedDB 사전 초기화/동기화 오류:", error);
+        console.error("사전 초기화 오류:", error);
       }
     }
 
@@ -579,12 +593,18 @@
       const baseEd = key.endsWith("ed") ? key.slice(0, -2) : key;
       const baseIng = key.endsWith("ing") ? key.slice(0, -3) : key;
 
-      let meaning = await getWordFromDB(key);
-      if (!meaning && key.endsWith("s")) meaning = await getWordFromDB(singular);
-      if (!meaning && key.endsWith("ed")) meaning = await getWordFromDB(baseEd);
-      if (!meaning && key.endsWith("ing")) meaning = await getWordFromDB(baseIng);
+      // 1. 메모리 사전(fallbackDictionary)에서 우선 검색
+      let meaning = fallbackDictionary[key] || fallbackDictionary[singular] || fallbackDictionary[baseEd] || fallbackDictionary[baseIng];
 
-      return meaning || "내장 사전에 등록된 기본 영어 단어입니다.";
+      // 2. 메모리에 없으면 IndexedDB에서 검색
+      if (!meaning) {
+        meaning = await getWordFromDB(key);
+        if (!meaning && key.endsWith("s")) meaning = await getWordFromDB(singular);
+        if (!meaning && key.endsWith("ed")) meaning = await getWordFromDB(baseEd);
+        if (!meaning && key.endsWith("ing")) meaning = await getWordFromDB(baseIng);
+      }
+
+      return meaning || "내장 사전에 등록되지 않은 단어입니다.";
     }
 
     function updateBriefingDate() {
@@ -600,7 +620,7 @@
     }
 
     const apiKeyStorageKey = "globalBriefing.apiKey";
-    const lastDataHashKey = "globalBriefing.lastDataHash";
+    const lastSectionsKey = "globalBriefing.lastSections";
     const lastUpdateTimestampKey = "globalBriefing.lastUpdateTimestamp";
     const UPDATE_COOLDOWN = 6 * 60 * 60 * 1000; // 6시간
 
@@ -632,9 +652,9 @@
             messages: [
               {
                 role: "system",
-                content: "You are a professional global news analyst. Provide today's top 5-7 global news stories. Output must be ONLY a valid JSON array of objects. Format: [{\"title\":\"Section Name\",\"tag\":\"Category\",\"hero\":boolean,\"stories\":[{\"title\":\"Story Headline\",\"source\":\"Media Name\",\"url\":\"#\",\"paragraphs\":[\"English sentence (Korean translation)\"]}]}]"
+                content: `You are a professional global news analyst. Provide today's top 5-7 global news stories. Output must be ONLY a valid JSON object with a "briefingSections" key. For each story title, append the summarized date and time in the format [YYYY-MM-DD HH:mm]. Format: {"briefingSections": [{"title":"Section Name","tag":"Category","hero":boolean,"stories":[{"title":"Story Headline [YYYY-MM-DD HH:mm]","source":"Media Name","url":"#","paragraphs":["English sentence (Korean translation)"]}]}]}`
               },
-              { role: "user", content: "Summarize today's most important global news for a briefing." }
+              { role: "user", content: `Summarize today's most important global news for a briefing. Current Time: ${new Date().toLocaleString()}` }
             ],
             response_format: { type: "json_object" }
           })
@@ -649,6 +669,8 @@
 
         if (Array.isArray(fetchedSections)) {
           briefingSections = fetchedSections;
+          localStorage.setItem(lastSectionsKey, JSON.stringify(briefingSections));
+
           renderBriefingCards();
           renderSectionNav();
           makeWordsClickable();
@@ -1255,6 +1277,18 @@
     window.addEventListener("resize", updateSectionNavForScroll);
 
     const savedApiKey = localStorage.getItem(apiKeyStorageKey) || "";
+    const cachedSections = localStorage.getItem(lastSectionsKey);
+
+    if (cachedSections) {
+      try {
+        briefingSections = JSON.parse(cachedSections);
+        renderBriefingCards();
+        renderSectionNav();
+        makeWordsClickable();
+      } catch (e) {
+        console.error("Cache load failed", e);
+      }
+    }
 
     if (savedApiKey) {
       document.getElementById("apiKeyInput").value = savedApiKey;
