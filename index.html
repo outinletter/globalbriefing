@@ -335,6 +335,25 @@
     .dictionary-inner {
       width: min(100%, 780px);
       margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .dictionary-actions {
+      display: flex;
+      gap: 8px;
+      margin-top: 4px;
+    }
+
+    .dict-link {
+      font-family: Arial, sans-serif;
+      font-size: 0.65rem;
+      font-weight: 800;
+      color: var(--muted);
+      text-decoration: underline;
+      text-transform: uppercase;
+      cursor: pointer;
     }
 
     .dictionary-label {
@@ -474,6 +493,13 @@
           </div>
           <p id="apiUpdateMsg" style="margin: 0; font-family: Arial, sans-serif; font-size: 0.6rem; color: var(--muted); display: none;"></p>
         </div>
+        <div id="dictSyncArea" style="display: flex; flex-direction: column; gap: 4px; margin-top: 6px; width: 100%; border-top: 1px solid var(--accent-soft); padding-top: 6px;">
+          <p style="margin: 0; font-family: Arial, sans-serif; font-size: 0.65rem; font-weight: 800; text-transform: uppercase;">Dictionary Sync</p>
+          <div style="display: flex; gap: 4px; align-items: center;">
+            <input type="text" id="dictUrlInput" placeholder="GitHub dictionary.json URL" aria-label="Dictionary URL" style="flex: 1; font-family: Arial, Helvetica, sans-serif; font-size: 0.65rem; padding: 4px 6px; border: 1px solid var(--line); background: var(--card); color: var(--text);" />
+            <button type="button" id="syncDictBtn" style="font-family: Arial, Helvetica, sans-serif; font-size: 0.65rem; font-weight: 800; padding: 4px 6px; border: 1px solid var(--line); background: var(--text); color: var(--bg); text-transform: uppercase; cursor: pointer; white-space: nowrap;">동기화</button>
+          </div>
+        </div>
       </div>
       <button class="action-btn settings-btn" id="settingsBtn" type="button" aria-label="Open settings">
         <svg viewBox="0 0 24 24" aria-hidden="true">
@@ -502,8 +528,12 @@
 
   <aside class="dictionary-bar" aria-live="polite">
     <div class="dictionary-inner">
-      <p class="dictionary-label">Offline Korean Dictionary</p>
+      <p class="dictionary-label" id="dictLabel">Offline Korean Dictionary</p>
       <p class="dictionary-text" id="dictionaryText">Tap any word in the briefing to see its Korean meaning.</p>
+      <div class="dictionary-actions" id="dictActions" style="display: none;">
+        <a id="naverDictLink" class="dict-link" target="_blank">Naver</a>
+        <a id="googleDictLink" class="dict-link" target="_blank">Google</a>
+      </div>
     </div>
   </aside>
 
@@ -547,24 +577,50 @@
         const transaction = db.transaction([storeName], "readwrite");
         const store = transaction.objectStore(storeName);
 
-        for (const [word, meaning] of Object.entries(wordsObject)) {
+        const entries = Object.entries(wordsObject);
+        let count = 0;
+
+        for (const [word, meaning] of entries) {
           store.put({ word, meaning });
         }
 
-        transaction.oncomplete = () => resolve();
+        transaction.oncomplete = () => {
+          console.log(`Saved ${entries.length} words to IndexedDB.`);
+          resolve();
+        };
         transaction.onerror = (event) => reject(event.target.error);
       });
+    }
+
+    const dictUrlKey = "globalBriefing.dictUrl";
+
+    async function syncDictionary(url) {
+      try {
+        document.getElementById("dictionaryText").textContent = "사전 데이터를 동기화 중입니다...";
+        const response = await fetch(url);
+        if (!response.ok) throw new Error("파일을 불러오지 못했습니다.");
+        const data = await response.json();
+
+        await saveWordsToDB(data);
+        fallbackDictionary = data;
+        localStorage.setItem(dictUrlKey, url);
+        document.getElementById("dictionaryText").textContent = `동기화 완료: ${Object.keys(data).length} 단어 저장됨.`;
+      } catch (error) {
+        console.error("Sync Error:", error);
+        document.getElementById("dictionaryText").textContent = `동기화 실패: ${error.message}`;
+      }
     }
 
     async function initDictionary() {
       try {
         await openDB();
+
+        const customUrl = localStorage.getItem(dictUrlKey);
         const response = await fetch("dictionary.json");
+
         if (response.ok) {
           fallbackDictionary = await response.json();
-          // IndexedDB에 데이터가 없는 경우에만 저장 (성능 최적화)
           const count = await new Promise((resolve) => {
-            if (!db) return resolve(0);
             const transaction = db.transaction([storeName], "readonly");
             const request = transaction.objectStore(storeName).count();
             request.onsuccess = () => resolve(request.result);
@@ -573,10 +629,12 @@
 
           if (count === 0) {
             await saveWordsToDB(fallbackDictionary);
-            console.log("IndexedDB 사전 데이터베이스 구축 완료.");
-          } else {
-            console.log("IndexedDB 사전이 이미 존재합니다.");
           }
+        }
+
+        if (customUrl) {
+          document.getElementById("dictUrlInput").value = customUrl;
+          // 백그라운드에서 최신 버전 확인 가능하나 일단 초기화는 로컬 캐시 우선
         }
       } catch (error) {
         console.error("사전 초기화 오류:", error);
@@ -589,22 +647,36 @@
 
     async function findMeaning(word) {
       const key = normalizeWord(word);
-      const singular = key.endsWith("s") ? key.slice(0, -1) : key;
-      const baseEd = key.endsWith("ed") ? key.slice(0, -2) : key;
-      const baseIng = key.endsWith("ing") ? key.slice(0, -3) : key;
+      const variations = [
+        key,
+        key.endsWith("s") ? key.slice(0, -1) : null, // plural
+        key.endsWith("es") ? key.slice(0, -2) : null, // plural
+        key.endsWith("ed") ? key.slice(0, -2) : null, // past
+        key.endsWith("ed") ? key.slice(0, -1) : null, // past (bake -> baked)
+        key.endsWith("ing") ? key.slice(0, -3) : null, // present participle
+        key.endsWith("ing") ? key.slice(0, -3) + "e" : null, // dance -> dancing
+        key.endsWith("ies") ? key.slice(0, -3) + "y" : null, // studies -> study
+        key.endsWith("ied") ? key.slice(0, -3) + "y" : null, // studied -> study
+        key.endsWith("er") ? key.slice(0, -2) : null, // comparative
+        key.endsWith("est") ? key.slice(0, -3) : null  // superlative
+      ].filter(v => v && v.length > 0);
 
-      // 1. 메모리 사전(fallbackDictionary)에서 우선 검색
-      let meaning = fallbackDictionary[key] || fallbackDictionary[singular] || fallbackDictionary[baseEd] || fallbackDictionary[baseIng];
-
-      // 2. 메모리에 없으면 IndexedDB에서 검색
-      if (!meaning) {
-        meaning = await getWordFromDB(key);
-        if (!meaning && key.endsWith("s")) meaning = await getWordFromDB(singular);
-        if (!meaning && key.endsWith("ed")) meaning = await getWordFromDB(baseEd);
-        if (!meaning && key.endsWith("ing")) meaning = await getWordFromDB(baseIng);
+      let meaning = null;
+      for (const v of variations) {
+        meaning = fallbackDictionary[v] || await getWordFromDB(v);
+        if (meaning) break;
       }
 
-      return meaning || "내장 사전에 등록되지 않은 단어입니다.";
+      const actions = document.getElementById("dictActions");
+      if (!meaning) {
+        actions.style.display = "flex";
+        document.getElementById("naverDictLink").href = `https://en.dict.naver.com/#/search?query=${key}`;
+        document.getElementById("googleDictLink").href = `https://translate.google.com/?sl=en&tl=ko&text=${key}&op=translate`;
+        return "내장 사전에 없는 단어입니다. 외부 사전을 참조하세요.";
+      } else {
+        actions.style.display = "none";
+        return meaning;
+      }
     }
 
     function updateBriefingDate() {
@@ -1339,6 +1411,18 @@
       if (!item) return;
       renderSavedDetail(item.dataset.id);
     });
+    document.getElementById("syncDictBtn").addEventListener("click", () => {
+      const url = document.getElementById("dictUrlInput").value.trim();
+      if (url) syncDictionary(url);
+    });
+
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js')
+          .then(reg => console.log('SW Registered', reg))
+          .catch(err => console.error('SW Registration failed', err));
+      });
+    }
 
     setInterval(updateBriefingDate, 60 * 60 * 1000);
   </script>
