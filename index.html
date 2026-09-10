@@ -670,12 +670,6 @@
         document.getElementById("apiStatusLight").style.background = "#f44336";
       }
     }
-      } catch (error) {
-        console.error("API fetch error:", error);
-        document.getElementById("dictionaryText").textContent = `API 오류: ${error.message}`;
-        document.getElementById("apiStatusLight").style.background = "#f44336"; // Red light
-      }
-    }
 
     const textSizeKey = "globalBriefing.readerSize";
     const fontKey = "globalBriefing.readerFont";
