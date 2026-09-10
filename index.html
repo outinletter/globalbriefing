@@ -283,6 +283,14 @@
       font-weight: 700;
     }
 
+    .translation {
+      display: block;
+      margin-top: 6px;
+      font-size: 0.85em;
+      opacity: 0.8;
+      color: var(--muted);
+    }
+
     .hero p {
       color: var(--muted);
     }
@@ -926,9 +934,7 @@
         }
 
         getOriginalArticleSummary(story).forEach((text) => {
-          const paragraph = document.createElement("p");
-          paragraph.textContent = text;
-          block.appendChild(paragraph);
+          renderParagraph(block, text);
         });
 
         details.appendChild(block);
@@ -1045,6 +1051,23 @@
       return story.paragraphs && story.paragraphs.length
         ? story.paragraphs
         : ["Briefing summary pending."];
+    }
+
+    function renderParagraph(container, text) {
+      const p = document.createElement("p");
+      // "영어 문장 (한글 번역)" 형태를 찾아 분리
+      const match = text.match(/^(.*?)\s*\(([^)]+)\)\s*$/);
+
+      if (match) {
+        p.textContent = match[1]; // 영어 문장
+        const trans = document.createElement("span");
+        trans.className = "translation";
+        trans.textContent = `(${match[2]})`; // 한글 번역
+        p.appendChild(trans);
+      } else {
+        p.textContent = text;
+      }
+      container.appendChild(p);
     }
 
     function makeWordsClickable(root = document.getElementById("readableContent")) {
@@ -1208,9 +1231,7 @@
         details.className = "details";
 
         card.paragraphs.forEach((text) => {
-          const paragraph = document.createElement("p");
-          paragraph.textContent = text;
-          details.appendChild(paragraph);
+          renderParagraph(details, text);
         });
 
         head.append(title, tag);
