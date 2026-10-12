@@ -1,4 +1,4 @@
-const CACHE_NAME = 'global-briefing-v1';
+const CACHE_NAME = 'global-briefing-v2';
 const ASSETS = [
   './',
   './index.html',
@@ -37,7 +37,7 @@ self.addEventListener('activate', (event) => {
 // 페치 단계: 네트워크 우선, 실패 시 캐시 반환 (단어장 등 정적 파일은 캐시 우선)
 self.addEventListener('fetch', (event) => {
   // API 요청은 캐싱하지 않음
-  if (event.request.url.includes('api.deepseek.com')) {
+  if (new URL(event.request.url).pathname.endsWith('/briefing.json')) {
     return;
   }
 
