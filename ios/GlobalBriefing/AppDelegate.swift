@@ -31,7 +31,7 @@ final class BriefingController: UIViewController, WKNavigationDelegate, WKScript
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        title = "GlobalBriefing"
+        navigationItem.title = ""
         navigationItem.largeTitleDisplayMode = .never
         navigationController?.navigationBar.prefersLargeTitles = false
         view.backgroundColor = .systemBackground

@@ -1,4 +1,4 @@
-const CACHE_NAME = 'global-briefing-v6';
+const CACHE_NAME = 'global-briefing-v7';
 const ASSETS = [
   './',
   './index.html',
