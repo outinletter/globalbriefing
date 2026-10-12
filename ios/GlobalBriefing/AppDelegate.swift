@@ -23,7 +23,6 @@ final class BriefingController: UIViewController, WKNavigationDelegate, WKScript
         config.setURLSchemeHandler(BundledSite(), forURLScheme: "briefing")
         return WKWebView(frame: .zero, configuration: config)
     }()
-    private let spinner = UIActivityIndicatorView(style: .medium)
     private let dictionary = try? OfflineDictionary()
     private var lookupTask: Task<Void, Never>?
     private var onlineMeanings = UserDefaults.standard.dictionary(forKey: "onlineMeanings.v1") as? [String: String] ?? [:]
@@ -39,6 +38,12 @@ final class BriefingController: UIViewController, WKNavigationDelegate, WKScript
         let script = """
         document.documentElement.classList.add('native-app');
         document.addEventListener('click', function(event) {
+          if (event.target.closest && event.target.closest('#settingsBtn') && location.protocol === 'briefing:') {
+            event.preventDefault();
+            event.stopImmediatePropagation();
+            window.webkit.messageHandlers.dictionaryLookup.postMessage('__settings__');
+            return;
+          }
           const word = event.target.closest && event.target.closest('.lookup-word');
           if (!word || location.protocol !== 'briefing:') return;
           event.preventDefault();
@@ -60,21 +65,37 @@ final class BriefingController: UIViewController, WKNavigationDelegate, WKScript
         let refresh = UIRefreshControl()
         refresh.addTarget(self, action: #selector(reload), for: .valueChanged)
         webView.scrollView.refreshControl = refresh
-        navigationItem.leftBarButtonItem = UIBarButtonItem(customView: spinner)
-        navigationItem.rightBarButtonItems = [
-            UIBarButtonItem(image: UIImage(systemName: "ellipsis.circle"), menu: UIMenu(children: [
-                UIAction(title: "현재 단어 저장", image: UIImage(systemName: "bookmark")) { [weak self] _ in self?.saveWord() },
-                UIAction(title: "내 단어장", image: UIImage(systemName: "bookmark.fill")) { [weak self] _ in
-                    self?.navigationController?.pushViewController(VocabularyController(style: .insetGrouped), animated: true)
-                },
-                UIAction(title: "뉴스 새로고침", image: UIImage(systemName: "arrow.clockwise")) { [weak self] _ in self?.reload() },
-                UIAction(title: "공유", image: UIImage(systemName: "square.and.arrow.up")) { [weak self] _ in self?.share() },
-                UIAction(title: "설정 · 개인정보 · 지원", image: UIImage(systemName: "gearshape")) { [weak self] _ in
-                    self?.navigationController?.pushViewController(AppSettingsController(style: .insetGrouped), animated: true)
-                }
-            ]))
-        ]
         webView.load(URLRequest(url: readerURL))
+    }
+
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        navigationController?.setNavigationBarHidden(true, animated: animated)
+    }
+
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        navigationController?.setNavigationBarHidden(false, animated: animated)
+    }
+
+    private func openSettingsMenu() {
+        let menu = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
+        menu.addAction(UIAlertAction(title: "글자 · 읽기 설정", style: .default) { [weak self] _ in
+            self?.webView.evaluateJavaScript("document.getElementById('settingsPanel').classList.add('is-open')")
+        })
+        menu.addAction(UIAlertAction(title: "현재 단어 저장", style: .default) { [weak self] _ in self?.saveWord() })
+        menu.addAction(UIAlertAction(title: "내 단어장", style: .default) { [weak self] _ in
+            self?.navigationController?.pushViewController(VocabularyController(style: .insetGrouped), animated: true)
+        })
+        menu.addAction(UIAlertAction(title: "뉴스 새로고침", style: .default) { [weak self] _ in self?.reload() })
+        menu.addAction(UIAlertAction(title: "공유", style: .default) { [weak self] _ in self?.share() })
+        menu.addAction(UIAlertAction(title: "설정 · 개인정보 · 지원", style: .default) { [weak self] _ in
+            self?.navigationController?.pushViewController(AppSettingsController(style: .insetGrouped), animated: true)
+        })
+        menu.addAction(UIAlertAction(title: "취소", style: .cancel))
+        menu.popoverPresentationController?.sourceView = webView
+        menu.popoverPresentationController?.sourceRect = CGRect(x: webView.bounds.maxX - 30, y: 24, width: 1, height: 1)
+        present(menu, animated: true)
     }
 
     @objc private func reload() {
@@ -83,7 +104,8 @@ final class BriefingController: UIViewController, WKNavigationDelegate, WKScript
 
     @objc private func share() {
         let sheet = UIActivityViewController(activityItems: [home], applicationActivities: nil)
-        sheet.popoverPresentationController?.barButtonItem = navigationItem.rightBarButtonItems?.first
+        sheet.popoverPresentationController?.sourceView = webView
+        sheet.popoverPresentationController?.sourceRect = CGRect(x: webView.bounds.midX, y: webView.bounds.midY, width: 1, height: 1)
         present(sheet, animated: true)
     }
 
@@ -92,6 +114,10 @@ final class BriefingController: UIViewController, WKNavigationDelegate, WKScript
               message.frameInfo.securityOrigin.host == "app",
               let word = message.body as? String, word.count <= 100,
               presentedViewController == nil else { return }
+        if word == "__settings__" {
+            openSettingsMenu()
+            return
+        }
         let result = dictionary?.lookup(word)
         lookupTask?.cancel()
         selectedWord = nil
@@ -171,11 +197,9 @@ final class BriefingController: UIViewController, WKNavigationDelegate, WKScript
     }
 
     func webView(_ webView: WKWebView, didStartProvisionalNavigation navigation: WKNavigation!) {
-        spinner.startAnimating()
     }
 
     func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
-        spinner.stopAnimating()
         webView.scrollView.refreshControl?.endRefreshing()
     }
 
@@ -188,7 +212,6 @@ final class BriefingController: UIViewController, WKNavigationDelegate, WKScript
     }
 
     private func showFailure(_ error: Error) {
-        spinner.stopAnimating()
         webView.scrollView.refreshControl?.endRefreshing()
         guard (error as NSError).code != NSURLErrorCancelled else { return }
         let alert = UIAlertController(title: "브리핑을 불러올 수 없습니다",
