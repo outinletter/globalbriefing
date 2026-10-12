@@ -73,8 +73,8 @@
 
     .section-nav {
       display: flex;
-      gap: 6px;
-      margin-top: 12px;
+      gap: 4px;
+      margin-top: 8px;
       overflow-x: auto;
       padding-bottom: 2px;
       scrollbar-width: none;
@@ -94,8 +94,8 @@
 
     .section-link {
       flex: 0 0 auto;
-      padding: 10px 12px;
-      min-height: 44px;
+      padding: 5px 8px;
+      min-height: 30px;
       color: var(--text);
       background: transparent;
       border: 1px solid var(--line);
@@ -378,7 +378,7 @@
     }
 
     .native-app header h1 {
-      display: none;
+      display: block;
     }
 
     .dictionary-inner:focus-within .dictionary-text,
@@ -457,8 +457,8 @@
 <body>
   <div class="app" id="readableContent">
     <header>
-      <p class="date" id="briefingDate">Morning Briefing</p>
-      <h1>Today's Global Briefing</h1>
+      <h1>GlobalBriefing</h1>
+      <p class="date" id="briefingDate">브리핑을 불러오는 중...</p>
       <nav class="section-nav" id="sectionNav" aria-label="Briefing sections"></nav>
       <div class="nav-actions" id="settingsPanel">
         <div style="display: flex; gap: 4px; align-items: center;">
@@ -703,8 +703,8 @@
       }).format(now);
       const period = now.getHours() < 12 ? "Morning" : "Afternoon";
       document.getElementById("briefingDate").textContent = briefingGeneratedAt
-        ? `RSS collected: ${dateText} ${now.toLocaleTimeString()} · ${Date.now() - now.getTime() > 48 * 60 * 60 * 1000 ? "오래된 브리핑" : "Briefing"}`
-        : "RSS 브리핑을 불러오는 중...";
+        ? `${dateText} · ${Date.now() - now.getTime() > 48 * 60 * 60 * 1000 ? "오래된 브리핑" : "업데이트"}`
+        : "브리핑을 불러오는 중...";
     }
 
     const lastSectionsKey = "globalBriefing.rssBriefing";
