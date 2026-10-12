@@ -1,0 +1,15 @@
+GlobalBriefing 내장 영한사전
+
+원저작자: 한국어 위키낱말사전의 기여자.
+추출: Kaikki.org / Wiktextract, Tatu Ylonen 및 프로젝트 기여자.
+출처: https://kaikki.org/kowiktionary/rawdata.html
+원문 및 기여 이력: https://ko.wiktionary.org/ (각 표제어 페이지와 편집 이력)
+
+사전 데이터와 GlobalBriefing에서 변환한 사전 데이터는 Creative Commons Attribution-ShareAlike 4.0 International (CC BY-SA 4.0)로 제공합니다.
+라이선스: https://creativecommons.org/licenses/by-sa/4.0/
+전체 조건: https://creativecommons.org/licenses/by-sa/4.0/legalcode
+
+변환 내용: 영어 항목의 한국어 뜻풀이 추출, 중복 제거, 소문자 표제어 정규화, 굴절형 색인, 한국어 항목에 명시된 영어 번역을 역방향 대응어로 정리. 역방향 대응어는 별도로 표시하며, 문맥에 맞는 영어 뜻풀이와 동일하지 않을 수 있습니다.
+AI로 뜻풀이를 생성하지 않았습니다. 커뮤니티 편집 데이터이며 상업 출판사 사전 수준의 정확성을 보증하지 않습니다.
+앱의 프로그램 코드가 아니라 이 사전 데이터에 적용되는 라이선스입니다.
+인터넷 연결 없이 검색과 뜻풀이 조회가 가능합니다. 출처 웹페이지 방문과 새 뉴스 수집에는 인터넷 연결이 필요합니다.
