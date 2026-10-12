@@ -17,19 +17,30 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
 
 final class BriefingController: UIViewController, WKNavigationDelegate, WKScriptMessageHandler {
     private let home = URL(string: "https://outinletter.github.io/globalbriefing/")!
-    private let webView = WKWebView()
+    private let readerURL = URL(string: "briefing://app/index.html")!
+    private let webView: WKWebView = {
+        let config = WKWebViewConfiguration()
+        config.setURLSchemeHandler(BundledSite(), forURLScheme: "briefing")
+        return WKWebView(frame: .zero, configuration: config)
+    }()
     private let spinner = UIActivityIndicatorView(style: .medium)
     private let dictionary = try? OfflineDictionary()
+    private var lookupTask: Task<Void, Never>?
+    private var onlineMeanings = UserDefaults.standard.dictionary(forKey: "onlineMeanings.v1") as? [String: String] ?? [:]
+    private var selectedWord: (word: String, meaning: String)?
 
     override func viewDidLoad() {
         super.viewDidLoad()
         title = "GlobalBriefing"
+        navigationItem.largeTitleDisplayMode = .never
+        navigationController?.navigationBar.prefersLargeTitles = false
         view.backgroundColor = .systemBackground
         webView.navigationDelegate = self
         let script = """
+        document.documentElement.classList.add('native-app');
         document.addEventListener('click', function(event) {
           const word = event.target.closest && event.target.closest('.lookup-word');
-          if (!word || location.origin !== 'https://outinletter.github.io') return;
+          if (!word || location.protocol !== 'briefing:') return;
           event.preventDefault();
           event.stopImmediatePropagation();
           window.webkit.messageHandlers.dictionaryLookup.postMessage(word.dataset.word);
@@ -51,15 +62,24 @@ final class BriefingController: UIViewController, WKNavigationDelegate, WKScript
         webView.scrollView.refreshControl = refresh
         navigationItem.leftBarButtonItem = UIBarButtonItem(customView: spinner)
         navigationItem.rightBarButtonItems = [
-            UIBarButtonItem(barButtonSystemItem: .action, target: self, action: #selector(share)),
-            UIBarButtonItem(barButtonSystemItem: .refresh, target: self, action: #selector(reload)),
+            UIBarButtonItem(image: UIImage(systemName: "ellipsis.circle"), menu: UIMenu(children: [
+                UIAction(title: "현재 단어 저장", image: UIImage(systemName: "bookmark")) { [weak self] _ in self?.saveWord() },
+                UIAction(title: "내 단어장", image: UIImage(systemName: "bookmark.fill")) { [weak self] _ in
+                    self?.navigationController?.pushViewController(VocabularyController(style: .insetGrouped), animated: true)
+                },
+                UIAction(title: "뉴스 새로고침", image: UIImage(systemName: "arrow.clockwise")) { [weak self] _ in self?.reload() },
+                UIAction(title: "공유", image: UIImage(systemName: "square.and.arrow.up")) { [weak self] _ in self?.share() },
+                UIAction(title: "설정 · 개인정보 · 지원", image: UIImage(systemName: "gearshape")) { [weak self] _ in
+                    self?.navigationController?.pushViewController(AppSettingsController(style: .insetGrouped), animated: true)
+                }
+            ])),
             UIBarButtonItem(title: "영한사전", style: .plain, target: self, action: #selector(openDictionary))
         ]
-        webView.load(URLRequest(url: home))
+        webView.load(URLRequest(url: readerURL))
     }
 
     @objc private func reload() {
-        webView.load(URLRequest(url: home, cachePolicy: .reloadIgnoringLocalCacheData))
+        webView.load(URLRequest(url: readerURL, cachePolicy: .reloadIgnoringLocalCacheData))
     }
 
     @objc private func share() {
@@ -80,13 +100,52 @@ final class BriefingController: UIViewController, WKNavigationDelegate, WKScript
 
     func userContentController(_ userContentController: WKUserContentController, didReceive message: WKScriptMessage) {
         guard message.frameInfo.isMainFrame,
-              message.frameInfo.securityOrigin.host == home.host,
+              message.frameInfo.securityOrigin.host == "app",
               let word = message.body as? String, word.count <= 100,
               presentedViewController == nil else { return }
         let result = dictionary?.lookup(word)
-        let meanings = result?.meanings.prefix(2).joined(separator: " · ")
-            ?? "내장 사전에 없는 단어입니다."
-        let text = String("\(result?.word ?? word): \(meanings)".prefix(220))
+        lookupTask?.cancel()
+        selectedWord = nil
+        if let result {
+            let meaning = result.meanings.prefix(2).joined(separator: " · ")
+            selectedWord = (result.word, meaning)
+            displayMeaning("\(result.word): \(meaning)")
+            return
+        }
+        let key = dictionary?.normalize(word) ?? word.lowercased()
+        if let cached = onlineMeanings[key] {
+            selectedWord = (key, cached)
+            displayMeaning("\(word): \(cached)")
+            return
+        }
+        guard UserDefaults.standard.bool(forKey: "onlineLookupAllowed") else {
+            displayMeaning("\(word): 내장 사전에 없습니다. 설정에서 온라인 조회를 허용할 수 있습니다.")
+            return
+        }
+        displayMeaning("\(word): 온라인에서 뜻을 조회하는 중...")
+        lookupTask = Task { [weak self] in
+            do {
+                let meaning = try await OnlineMeaning.lookup(key)
+                guard !Task.isCancelled, let self else { return }
+                guard UserDefaults.standard.bool(forKey: "onlineLookupAllowed") else {
+                    self.displayMeaning("온라인 조회가 꺼져 있습니다.")
+                    return
+                }
+                self.onlineMeanings[key] = meaning
+                UserDefaults.standard.set(self.onlineMeanings, forKey: "onlineMeanings.v1")
+                self.selectedWord = (key, meaning)
+                self.displayMeaning("\(word): \(meaning)")
+            } catch {
+                guard !Task.isCancelled, let self else { return }
+                let message = (error as? OnlineMeaning.Failure)?.localizedDescription
+                    ?? "온라인 조회 실패. 인터넷 연결을 확인하세요."
+                self.displayMeaning("\(word): \(message)")
+            }
+        }
+    }
+
+    private func displayMeaning(_ meaning: String) {
+        let text = String(meaning.prefix(220))
         webView.callAsyncJavaScript("""
             const text = document.getElementById('dictionaryText');
             if (text) text.textContent = meaning;
@@ -95,14 +154,24 @@ final class BriefingController: UIViewController, WKNavigationDelegate, WKScript
             """, arguments: ["meaning": text], in: nil, in: .page, completionHandler: nil)
     }
 
+    private func saveWord() {
+        guard let selectedWord else {
+            displayMeaning("뜻을 조회한 단어를 먼저 선택하세요.")
+            return
+        }
+        var saved = UserDefaults.standard.dictionary(forKey: "savedVocabulary.v1") as? [String: String] ?? [:]
+        saved[selectedWord.word] = selectedWord.meaning
+        UserDefaults.standard.set(saved, forKey: "savedVocabulary.v1")
+        displayMeaning("저장됨 · \(selectedWord.word): \(selectedWord.meaning)")
+    }
+
     func webView(_ webView: WKWebView, decidePolicyFor navigationAction: WKNavigationAction,
                  decisionHandler: @escaping (WKNavigationActionPolicy) -> Void) {
         guard let url = navigationAction.request.url else {
             decisionHandler(.cancel)
             return
         }
-        if url.scheme == "https", url.host == home.host,
-           url.path.hasPrefix(home.path), navigationAction.targetFrame != nil {
+        if url.scheme == "briefing", url.host == "app", navigationAction.targetFrame != nil {
             decisionHandler(.allow)
         } else {
             if ["https", "http"].contains(url.scheme ?? "") {

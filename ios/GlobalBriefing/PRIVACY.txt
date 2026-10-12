@@ -1,0 +1,16 @@
+GlobalBriefing 개인정보 처리방침
+시행일: 2026-10-13
+
+로그인, 광고, 분석 SDK, 위치·연락처·사진 접근을 사용하지 않습니다. 앱 운영자에게 별도 계정이나 학습 기록을 업로드하지 않습니다.
+읽기 설정, 저장한 브리핑, 내 단어장 및 온라인 조회 결과는 기기에 저장됩니다. 단어장은 앱의 편집 기능으로 삭제할 수 있으며 앱을 삭제하면 앱 내 저장 데이터도 제거됩니다. 운영체제 백업에 포함될 수 있습니다.
+
+뉴스 데이터를 갱신할 때 GitHub Pages에 접속합니다. 온라인 단어 조회는 설정에서 명시적으로 켠 경우에만 사용합니다. Free Dictionary API에는 조회한 영어 단어가, MyMemory에는 영어 단어 또는 영어 뜻풀이가 전송됩니다. 네트워크 서비스는 IP 주소 등 일반 접속 정보를 처리할 수 있습니다. 자동 번역은 오류나 사용량 제한이 있을 수 있습니다. 온라인 조회 허용을 끄면 새 조회 요청을 중단할 수 있습니다.
+
+뉴스 원문 링크와 외부 지원 링크를 열면 해당 서비스의 정책이 적용됩니다. 제3자 서비스의 보관·삭제 정책은 해당 서비스에서 확인해야 합니다.
+GitHub 개인정보 정책: https://docs.github.com/en/site-policy/privacy-policies/github-general-privacy-statement
+Free Dictionary API: https://dictionaryapi.dev/
+MyMemory: https://mymemory.translated.net/doc/privacy.php
+
+공개 개인정보 처리방침: https://outinletter.github.io/globalbriefing/privacy.html
+지원 및 오류·권리 침해 신고: https://github.com/outinletter/globalbriefing/issues
+신고할 때 비밀번호나 개인정보를 공개하지 마세요.

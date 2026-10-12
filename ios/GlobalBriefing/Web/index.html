@@ -1,0 +1,1214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Global Briefing</title>
+  <meta name="apple-mobile-web-app-title" content="Global Briefing">
+  <meta name="application-name" content="Global Briefing">
+  <link rel="apple-touch-icon" sizes="512x512" href="globalbriefing.png">
+  <link rel="icon" type="image/png" sizes="512x512" href="globalbriefing.png">
+  <style>
+    :root {
+      --bg: #f7f4ee;
+      --card: #fffdf8;
+      --text: #111111;
+      --muted: #444444;
+      --line: #1f1f1f;
+      --accent: #111111;
+      --accent-soft: #ece7dc;
+      --mint: #ece7dc;
+      --peach: #f7f4ee;
+      --shadow: none;
+      --reader-size: 1.39rem;
+      --reader-font: Georgia, "Times New Roman", Times, serif;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      padding-bottom: 88px;
+      -webkit-text-size-adjust: 100%;
+      font-family: var(--reader-font);
+      color: var(--text);
+      background: var(--bg);
+    }
+
+    .app {
+      width: min(100%, 780px);
+      margin: 0 auto;
+      padding-top: 0;
+    }
+
+    header {
+      position: relative;
+      width: min(100%, 780px);
+      z-index: 3;
+      padding: 18px 48px 14px 16px;
+      background: rgba(247, 244, 238, 0.96);
+      border-bottom: 3px double var(--line);
+      backdrop-filter: blur(8px);
+    }
+
+    .date {
+      margin: 0 0 6px;
+      color: var(--muted);
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: 0.72rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 1.7rem;
+      line-height: 1.15;
+      letter-spacing: 0;
+      text-align: center;
+    }
+
+    .section-nav {
+      display: flex;
+      gap: 6px;
+      margin-top: 12px;
+      overflow-x: auto;
+      padding-bottom: 2px;
+      scrollbar-width: none;
+      scroll-behavior: smooth;
+      cursor: grab;
+      user-select: none;
+    }
+
+    .section-nav::-webkit-scrollbar {
+      display: none;
+    }
+
+    .section-nav.is-dragging {
+      cursor: grabbing;
+      scroll-behavior: auto;
+    }
+
+    .section-link {
+      flex: 0 0 auto;
+      padding: 10px 12px;
+      min-height: 44px;
+      color: var(--text);
+      background: transparent;
+      border: 1px solid var(--line);
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: 0.68rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      cursor: pointer;
+    }
+
+    .section-link.is-active {
+      color: var(--bg);
+      background: var(--text);
+    }
+
+    .nav-actions {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      display: none;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 6px;
+      margin: 0;
+      padding: 8px;
+      background: rgba(247, 244, 238, 0.98);
+      border: 1px solid var(--line);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    }
+
+    .nav-actions.is-open {
+      display: flex;
+    }
+
+    .settings-btn {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      z-index: 2;
+    }
+
+    .nav-actions.is-open + .settings-btn {
+      display: none;
+    }
+
+    .action-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 44px;
+      height: 44px;
+      min-height: 44px;
+      padding: 0;
+      color: var(--text);
+      background: transparent;
+      border: 0;
+      border-radius: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: 0.74rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      cursor: pointer;
+    }
+
+    .action-btn svg {
+      width: 17px;
+      height: 17px;
+      stroke: currentColor;
+      stroke-width: 1.8;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      fill: none;
+    }
+
+    .action-btn:active,
+    .action-btn:focus {
+      background: var(--accent-soft);
+      outline: none;
+    }
+
+    main {
+      display: grid;
+      gap: 0;
+      padding: 12px 14px 18px;
+    }
+
+    .card {
+      padding: 16px 0;
+      background: transparent;
+      border: 0;
+      border-bottom: 1px solid var(--line);
+      border-radius: 0;
+      box-shadow: none;
+      scroll-margin-top: 12px;
+    }
+
+    .hero {
+      color: var(--text);
+      background: transparent;
+      border-top: 2px solid var(--line);
+      border-bottom: 2px solid var(--line);
+      box-shadow: none;
+    }
+
+    .card-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+
+    h2 {
+      margin: 0;
+      font-size: 1.25rem;
+      line-height: 1.25;
+      letter-spacing: 0;
+    }
+
+    .tag {
+      flex: 0 0 auto;
+      padding: 3px 0;
+      color: var(--accent);
+      background: transparent;
+      border-radius: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: 0.68rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    .hero .tag {
+      color: var(--accent);
+      background: transparent;
+    }
+
+    .details {
+      display: grid;
+      gap: 9px;
+    }
+
+    .story-block {
+      display: grid;
+      gap: 8px;
+      padding: 10px 0;
+      border-top: 1px solid var(--line);
+    }
+
+    .story-block:first-child {
+      border-top: 0;
+      padding-top: 0;
+    }
+
+    .story-title {
+      margin: 0;
+      color: var(--text);
+      font-size: 1rem;
+      line-height: 1.3;
+    }
+
+    .source-link {
+      color: var(--muted);
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: 0.72rem;
+      font-weight: 800;
+      text-transform: uppercase;
+    }
+
+    p {
+      margin: 0;
+      color: var(--muted);
+      font-size: var(--reader-size);
+      line-height: 1.5;
+    }
+
+    .implication {
+      margin-top: 4px;
+      padding-top: 8px;
+      color: var(--text);
+      border-top: 1px solid var(--line);
+      font-weight: 700;
+    }
+
+    .translation {
+      display: block;
+      margin-top: 6px;
+      font-size: 0.85em;
+      opacity: 0.8;
+      color: var(--muted);
+    }
+
+    .hero p {
+      color: var(--muted);
+    }
+
+    .lookup-word {
+      display: inline;
+      padding: 0 1px;
+      color: inherit;
+      background: transparent;
+      border: 0;
+      border-radius: 0;
+      font: inherit;
+      text-align: inherit;
+      cursor: pointer;
+    }
+
+    .lookup-word:active,
+    .lookup-word:focus {
+      color: var(--text);
+      background: var(--accent-soft);
+      outline: none;
+    }
+
+    .hero .lookup-word:active,
+    .hero .lookup-word:focus {
+      color: var(--text);
+      background: var(--mint);
+    }
+
+    .dictionary-bar {
+      position: fixed;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      z-index: 6;
+      padding: 6px 16px calc(6px + env(safe-area-inset-bottom));
+      background: rgba(247, 244, 238, 0.98);
+      border-top: 1px solid var(--line);
+      box-shadow: none;
+    }
+
+    .dictionary-inner {
+      width: min(100%, 780px);
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .dictionary-actions {
+      display: flex;
+      gap: 8px;
+      margin-top: 4px;
+    }
+
+    .dict-link {
+      font-family: Arial, sans-serif;
+      font-size: 0.65rem;
+      font-weight: 800;
+      color: var(--muted);
+      text-decoration: underline;
+      text-transform: uppercase;
+      cursor: pointer;
+    }
+
+    .dictionary-label {
+      margin: 0;
+      color: var(--muted);
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: 0.62rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    .dictionary-text {
+      margin: 0;
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+      font-size: 0.82rem;
+      line-height: 1.35;
+      display: -webkit-box;
+      -webkit-box-orient: vertical;
+      -webkit-line-clamp: 2;
+      overflow: hidden;
+    }
+
+    .native-app header h1 {
+      display: none;
+    }
+
+    .dictionary-inner:focus-within .dictionary-text,
+    .dictionary-text:focus {
+      -webkit-line-clamp: unset;
+      max-height: 120px;
+      overflow-y: auto;
+    }
+
+    .saved-view {
+      display: none;
+      padding: 12px 14px 18px;
+    }
+
+    .saved-view.is-active {
+      display: block;
+    }
+
+    .saved-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 12px 0;
+      border-bottom: 2px solid var(--line);
+    }
+
+    .saved-list,
+    .saved-detail {
+      display: grid;
+      gap: 0;
+    }
+
+    .saved-item,
+    .saved-card {
+      padding: 14px 0;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .saved-item {
+      width: 100%;
+      color: var(--text);
+      background: transparent;
+      border-top: 0;
+      border-left: 0;
+      border-right: 0;
+      font: inherit;
+      text-align: left;
+      cursor: pointer;
+    }
+
+    .is-hidden {
+      display: none;
+    }
+
+    @media (min-width: 680px) {
+      header {
+        padding: 24px 54px 16px 22px;
+      }
+
+      .app {
+        padding-top: 0;
+      }
+
+      h1 {
+        font-size: 2rem;
+      }
+
+      main {
+        grid-template-columns: 1fr;
+        padding: 22px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app" id="readableContent">
+    <header>
+      <p class="date" id="briefingDate">Morning Briefing</p>
+      <h1>Today's Global Briefing</h1>
+      <nav class="section-nav" id="sectionNav" aria-label="Briefing sections"></nav>
+      <div class="nav-actions" id="settingsPanel">
+        <div style="display: flex; gap: 4px; align-items: center;">
+          <button class="action-btn" id="saveBriefingBtn" type="button" aria-label="Save briefing">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M5 4h11l3 3v13H5z"></path>
+              <path d="M8 4v6h8V4"></path>
+              <path d="M8 20v-6h8v6"></path>
+            </svg>
+          </button>
+          <button class="action-btn" id="showSavedBtn" type="button" aria-label="Open saved briefings">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M4 6h16"></path>
+              <path d="M4 12h16"></path>
+              <path d="M4 18h16"></path>
+            </svg>
+          </button>
+          <button class="action-btn" id="decreaseTextBtn" type="button" aria-label="Decrease text size">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M4 18l5-12 5 12"></path>
+              <path d="M6 14h6"></path>
+              <path d="M16 18h5"></path>
+            </svg>
+          </button>
+          <button class="action-btn" id="increaseTextBtn" type="button" aria-label="Increase text size">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M4 18l5-12 5 12"></path>
+              <path d="M6 14h6"></path>
+              <path d="M18.5 13v6"></path>
+              <path d="M15.5 16h6"></path>
+            </svg>
+          </button>
+          <button class="action-btn" id="fontCycleBtn" type="button" aria-label="Change font">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M5 19l6-14 6 14"></path>
+              <path d="M8 13h6"></path>
+              <path d="M18 8h2"></path>
+              <path d="M19 7v2"></path>
+            </svg>
+          </button>
+        </div>
+        <div id="apiConfigArea" style="display: flex; flex-direction: column; gap: 4px; margin-top: 6px; width: 100%;">
+          <div style="display: flex; gap: 4px; align-items: center;">
+            <div id="apiStatusLight" style="width: 8px; height: 8px; border-radius: 50%; background: #ccc; flex-shrink: 0;" title="API 상태"></div>
+            <button type="button" id="updateApiBtn" style="font-family: Arial, Helvetica, sans-serif; font-size: 0.65rem; font-weight: 800; padding: 4px 6px; border: 1px solid var(--line); background: var(--text); color: var(--bg); text-transform: uppercase; cursor: pointer; white-space: nowrap;">업데이트</button>
+          </div>
+          <p id="apiUpdateMsg" style="margin: 0; font-family: Arial, sans-serif; font-size: 0.6rem; color: var(--muted); display: none;"></p>
+        </div>
+        <div id="dictSyncArea" style="display: flex; flex-direction: column; gap: 4px; margin-top: 6px; width: 100%; border-top: 1px solid var(--accent-soft); padding-top: 6px;">
+          <p style="margin: 0; font-family: Arial, sans-serif; font-size: 0.65rem; font-weight: 800; text-transform: uppercase;">Dictionary Sync</p>
+          <div style="display: flex; gap: 4px; align-items: center;">
+            <input type="text" id="dictUrlInput" placeholder="GitHub dictionary.json URL" aria-label="Dictionary URL" style="flex: 1; font-family: Arial, Helvetica, sans-serif; font-size: 0.65rem; padding: 4px 6px; border: 1px solid var(--line); background: var(--card); color: var(--text);" />
+            <button type="button" id="syncDictBtn" style="font-family: Arial, Helvetica, sans-serif; font-size: 0.65rem; font-weight: 800; padding: 4px 6px; border: 1px solid var(--line); background: var(--text); color: var(--bg); text-transform: uppercase; cursor: pointer; white-space: nowrap;">동기화</button>
+          </div>
+        </div>
+      </div>
+      <button class="action-btn settings-btn" id="settingsBtn" type="button" aria-label="Open settings">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M12 15.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7z"></path>
+          <path d="M19.4 15a1.8 1.8 0 0 0 .36 1.98l.04.04a2.1 2.1 0 0 1-2.98 2.98l-.04-.04A1.8 1.8 0 0 0 14.8 19.6a1.8 1.8 0 0 0-1.1 1.64V21.3a2.1 2.1 0 0 1-4.2 0v-.06A1.8 1.8 0 0 0 8.4 19.6a1.8 1.8 0 0 0-1.98.36l-.04.04a2.1 2.1 0 0 1-2.98-2.98l.04-.04A1.8 1.8 0 0 0 3.8 15a1.8 1.8 0 0 0-1.64-1.1H2.1a2.1 2.1 0 0 1 0-4.2h.06A1.8 1.8 0 0 0 3.8 8.6a1.8 1.8 0 0 0-.36-1.98l-.04-.04A2.1 2.1 0 0 1 6.38 3.6l.04.04A1.8 1.8 0 0 0 8.4 4a1.8 1.8 0 0 0 1.1-1.64V2.3a2.1 2.1 0 0 1 4.2 0v.06A1.8 1.8 0 0 0 14.8 4a1.8 1.8 0 0 0 1.98-.36l.04-.04a2.1 2.1 0 0 1 2.98 2.98l-.04.04A1.8 1.8 0 0 0 19.4 8.6a1.8 1.8 0 0 0 1.64 1.1h.06a2.1 2.1 0 0 1 0 4.2h-.06A1.8 1.8 0 0 0 19.4 15z"></path>
+        </svg>
+      </button>
+    </header>
+
+    <main id="briefingView"></main>
+
+    <section class="saved-view" id="savedView" aria-label="Saved briefings">
+      <div class="saved-top">
+        <h2>Saved Briefings</h2>
+        <button class="action-btn" id="backToBriefingBtn" type="button" aria-label="Back to briefing">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M15 18l-6-6 6-6"></path>
+            <path d="M9 12h11"></path>
+          </svg>
+        </button>
+      </div>
+      <div class="saved-list" id="savedList"></div>
+      <div class="saved-detail" id="savedDetail"></div>
+    </section>
+  </div>
+
+  <aside class="dictionary-bar" aria-live="polite">
+    <div class="dictionary-inner">
+      <p class="dictionary-label" id="dictLabel">Offline Korean Dictionary</p>
+      <p class="dictionary-text" id="dictionaryText" tabindex="0" aria-live="polite">단어를 누르면 여기에 뜻이 표시됩니다.</p>
+      <div class="dictionary-actions" id="dictActions" style="display: none;">
+        <a id="naverDictLink" class="dict-link" target="_blank">Naver</a>
+        <a id="googleDictLink" class="dict-link" target="_blank">Google</a>
+      </div>
+    </div>
+  </aside>
+
+  <script>
+    const dbName = "GlobalBriefingDB";
+    const storeName = "dictionary";
+    let db = null;
+    let fallbackDictionary = {};
+
+    function openDB() {
+      return new Promise((resolve, reject) => {
+        const request = indexedDB.open(dbName, 1);
+        request.onupgradeneeded = (event) => {
+          const database = event.target.result;
+          if (!database.objectStoreNames.contains(storeName)) {
+            database.createObjectStore(storeName, { keyPath: "word" });
+          }
+        };
+        request.onsuccess = (event) => {
+          db = event.target.result;
+          resolve(db);
+        };
+        request.onerror = (event) => reject(event.target.error);
+      });
+    }
+
+    function getWordFromDB(wordKey) {
+      return new Promise((resolve) => {
+        if (!db) return resolve(null);
+        const transaction = db.transaction([storeName], "readonly");
+        const store = transaction.objectStore(storeName);
+        const request = store.get(wordKey);
+        request.onsuccess = (event) => resolve(event.target.result ? event.target.result.meaning : null);
+        request.onerror = () => resolve(null);
+      });
+    }
+
+    function saveWordsToDB(wordsObject) {
+      return new Promise((resolve, reject) => {
+        if (!db) return reject(new Error("Database not open"));
+        const transaction = db.transaction([storeName], "readwrite");
+        const store = transaction.objectStore(storeName);
+
+        const entries = Object.entries(wordsObject);
+        let count = 0;
+
+        for (const [word, meaning] of entries) {
+          store.put({ word, meaning });
+        }
+
+        transaction.oncomplete = () => {
+          console.log(`Saved ${entries.length} words to IndexedDB.`);
+          resolve();
+        };
+        transaction.onerror = (event) => reject(event.target.error);
+      });
+    }
+
+    const dictUrlKey = "globalBriefing.dictUrl";
+
+    async function syncDictionary(url) {
+      try {
+        document.getElementById("dictionaryText").textContent = "사전 데이터를 동기화 중입니다...";
+        const response = await fetch(url);
+        if (!response.ok) throw new Error("파일을 불러오지 못했습니다.");
+        const data = await response.json();
+
+        await saveWordsToDB(data);
+        fallbackDictionary = data;
+        localStorage.setItem(dictUrlKey, url);
+        document.getElementById("dictionaryText").textContent = `동기화 완료: ${Object.keys(data).length} 단어 저장됨.`;
+      } catch (error) {
+        console.error("Sync Error:", error);
+        document.getElementById("dictionaryText").textContent = `동기화 실패: ${error.message}`;
+      }
+    }
+
+    async function initDictionary() {
+      try {
+        await openDB();
+
+        const customUrl = localStorage.getItem(dictUrlKey);
+        const response = await fetch("dictionary.json");
+
+        if (response.ok) {
+          fallbackDictionary = await response.json();
+          const count = await new Promise((resolve) => {
+            const transaction = db.transaction([storeName], "readonly");
+            const request = transaction.objectStore(storeName).count();
+            request.onsuccess = () => resolve(request.result);
+            request.onerror = () => resolve(0);
+          });
+
+          if (count === 0) {
+            await saveWordsToDB(fallbackDictionary);
+          }
+        }
+
+        if (customUrl) {
+          document.getElementById("dictUrlInput").value = customUrl;
+          // 백그라운드에서 최신 버전 확인 가능하나 일단 초기화는 로컬 캐시 우선
+        }
+      } catch (error) {
+        console.error("사전 초기화 오류:", error);
+      }
+    }
+
+    function normalizeWord(word) {
+      return word.toLowerCase().replace(/[^\w'-]/g, "");
+    }
+
+    async function findMeaning(word) {
+      const key = normalizeWord(word);
+      const variations = [
+        key,
+        key.endsWith("s") ? key.slice(0, -1) : null, // plural
+        key.endsWith("es") ? key.slice(0, -2) : null, // plural
+        key.endsWith("ed") ? key.slice(0, -2) : null, // past
+        key.endsWith("ed") ? key.slice(0, -1) : null, // past (bake -> baked)
+        key.endsWith("ing") ? key.slice(0, -3) : null, // present participle
+        key.endsWith("ing") ? key.slice(0, -3) + "e" : null, // dance -> dancing
+        key.endsWith("ies") ? key.slice(0, -3) + "y" : null, // studies -> study
+        key.endsWith("ied") ? key.slice(0, -3) + "y" : null, // studied -> study
+        key.endsWith("er") ? key.slice(0, -2) : null, // comparative
+        key.endsWith("est") ? key.slice(0, -3) : null  // superlative
+      ].filter(v => v && v.length > 0);
+
+      let meaning = null;
+      for (const v of variations) {
+        meaning = fallbackDictionary[v] || await getWordFromDB(v);
+        if (meaning) break;
+      }
+
+      const actions = document.getElementById("dictActions");
+      if (!meaning) {
+        actions.style.display = "flex";
+        document.getElementById("naverDictLink").href = `https://en.dict.naver.com/#/search?query=${key}`;
+        document.getElementById("googleDictLink").href = `https://translate.google.com/?sl=en&tl=ko&text=${key}&op=translate`;
+        return "내장 사전에 없는 단어입니다. 외부 사전을 참조하세요.";
+      } else {
+        actions.style.display = "none";
+        return meaning;
+      }
+    }
+
+    function updateBriefingDate() {
+      const now = briefingGeneratedAt ? new Date(briefingGeneratedAt) : new Date();
+      const dateText = new Intl.DateTimeFormat("en-US", {
+        weekday: "long",
+        month: "long",
+        day: "numeric",
+        year: "numeric"
+      }).format(now);
+      const period = now.getHours() < 12 ? "Morning" : "Afternoon";
+      document.getElementById("briefingDate").textContent = briefingGeneratedAt
+        ? `RSS collected: ${dateText} ${now.toLocaleTimeString()} · ${Date.now() - now.getTime() > 48 * 60 * 60 * 1000 ? "오래된 브리핑" : "Briefing"}`
+        : "RSS 브리핑을 불러오는 중...";
+    }
+
+    const lastSectionsKey = "globalBriefing.rssBriefing";
+    let briefingGeneratedAt = null;
+
+    async function loadBriefing() {
+      const message = document.getElementById("apiUpdateMsg");
+      message.style.display = "block";
+      message.textContent = "RSS 브리핑을 불러오는 중...";
+      try {
+        const response = await fetch("briefing.json", { cache: "no-store" });
+        if (!response.ok) throw new Error("브리핑 파일을 불러올 수 없습니다.");
+        const result = await response.json();
+        if (!result.generatedAt || !Number.isFinite(Date.parse(result.generatedAt)) ||
+            !Array.isArray(result.briefingSections) || !result.briefingSections.length ||
+            !result.briefingSections.every(section => Array.isArray(section.stories) &&
+              section.stories.length && section.stories.every(story =>
+                typeof story.title === "string" && typeof story.url === "string" &&
+                story.url.startsWith("https://") && Array.isArray(story.paragraphs) &&
+                story.paragraphs.every(text => typeof text === "string")))) {
+          throw new Error("브리핑 데이터 형식이 올바르지 않습니다.");
+        }
+        briefingSections = result.briefingSections;
+        briefingGeneratedAt = result.generatedAt;
+        localStorage.setItem(lastSectionsKey, JSON.stringify(result));
+        renderBriefingCards();
+        renderSectionNav();
+        makeWordsClickable();
+        updateBriefingDate();
+        document.getElementById("apiStatusLight").style.background = "#4caf50";
+        message.textContent = "RSS 설명 기반 짧은 요약 · 원문 언어";
+      } catch (error) {
+        document.getElementById("apiStatusLight").style.background = "#f44336";
+        message.textContent = error.message + (briefingSections.length ? " 저장된 브리핑을 표시합니다." : "");
+      }
+    }
+
+    const textSizeKey = "globalBriefing.readerSize";
+    const fontKey = "globalBriefing.readerFont";
+    const fontOptions = {
+      serif: 'Georgia, "Times New Roman", Times, serif',
+      sans: 'Arial, Helvetica, sans-serif',
+      mono: '"Courier New", Courier, monospace',
+      system: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif'
+    };
+    const fontOrder = ["serif", "sans", "mono", "system"];
+    let readerSize = Number(localStorage.getItem(textSizeKey) || "1.39");
+    let readerFont = localStorage.getItem(fontKey) || "serif";
+
+    function applyReaderSize() {
+      readerSize = Math.min(1.56, Math.max(0.82, readerSize));
+      document.documentElement.style.setProperty("--reader-size", `${readerSize.toFixed(2)}rem`);
+      localStorage.setItem(textSizeKey, readerSize.toFixed(2));
+    }
+
+    function changeReaderSize(delta) {
+      readerSize += delta;
+      applyReaderSize();
+    }
+
+    function applyReaderFont() {
+      if (!fontOptions[readerFont]) readerFont = "serif";
+      document.documentElement.style.setProperty("--reader-font", fontOptions[readerFont]);
+      document.getElementById("fontCycleBtn").title = `Font: ${readerFont}`;
+      localStorage.setItem(fontKey, readerFont);
+    }
+
+    function cycleReaderFont() {
+      const currentIndex = fontOrder.indexOf(readerFont);
+      readerFont = fontOrder[(currentIndex + 1) % fontOrder.length];
+      applyReaderFont();
+    }
+
+    // 내장 사전은 외부 JSON에서 호출되므로 하드코딩된 Object.assign은 제거됩니다.
+
+    let briefingSections = [];
+
+    function renderBriefingCards() {
+      const main = document.getElementById("briefingView");
+      main.replaceChildren();
+
+      briefingSections.forEach((section, sectionIndex) => {
+        const card = document.createElement("article");
+        card.className = section.hero ? "card hero" : "card";
+        card.id = `section-${sectionIndex}`;
+
+        const head = document.createElement("div");
+        head.className = "card-head";
+
+        const title = document.createElement("h2");
+        title.textContent = section.title;
+
+        const tag = document.createElement("span");
+        tag.className = "tag";
+        tag.textContent = section.tag;
+
+        const details = document.createElement("div");
+        details.className = "details";
+
+        const story = section.stories[0];
+        const block = document.createElement("section");
+        block.className = "story-block";
+
+        if (!story) {
+          const empty = document.createElement("p");
+          empty.textContent = "No briefing article is available yet.";
+          block.appendChild(empty);
+          details.appendChild(block);
+          head.append(title, tag);
+          card.append(head, details);
+          main.appendChild(card);
+          return;
+        }
+
+        const storyTitle = document.createElement("h3");
+        storyTitle.className = "story-title";
+        storyTitle.className = "source-link";
+        storyTitle.textContent = story.publishedAt ? new Date(story.publishedAt).toLocaleString() : "";
+        block.appendChild(storyTitle);
+
+        if (story.source && story.url) {
+          const source = document.createElement("a");
+          source.className = "source-link";
+          source.href = story.url;
+          source.target = "_blank";
+          source.rel = "noopener noreferrer";
+          source.textContent = `Source: ${story.source}`;
+          block.appendChild(source);
+        }
+
+        getOriginalArticleSummary(story).forEach((text) => {
+          renderParagraph(block, text);
+        });
+
+        details.appendChild(block);
+
+        head.append(title, tag);
+        card.append(head, details);
+        main.appendChild(card);
+      });
+    }
+
+    function renderSectionNav() {
+      const nav = document.getElementById("sectionNav");
+      nav.replaceChildren();
+
+      const categories = new Set();
+      briefingSections.forEach((section, index) => {
+        const category = section.tag || "General";
+        if (categories.has(category)) return;
+        categories.add(category);
+        const button = document.createElement("button");
+        button.type = "button";
+        button.className = "section-link";
+        button.dataset.sectionIndex = index;
+        button.textContent = category;
+        button.addEventListener("click", () => {
+          const target = document.getElementById(`section-${index}`);
+          target.scrollIntoView({ behavior: "smooth", block: "start" });
+        });
+        nav.appendChild(button);
+      });
+
+      updateSectionNavForScroll();
+    }
+
+    function setActiveSectionNav(index) {
+      const nav = document.getElementById("sectionNav");
+      const active = nav.querySelector(`[data-section-index="${index}"]`);
+      if (!active || active.classList.contains("is-active")) return;
+
+      nav.querySelectorAll(".section-link").forEach((button) => {
+        button.classList.toggle("is-active", button === active);
+      });
+      nav.scrollTo({
+        left: active.offsetLeft - (nav.clientWidth - active.offsetWidth) / 2,
+        behavior: "smooth"
+      });
+    }
+
+    function updateSectionNavForScroll() {
+      return; // Article navigation stays still while reading.
+    }
+
+    function initSectionNavDrag() {
+      const nav = document.getElementById("sectionNav");
+      let dragging = false;
+      let dragged = false;
+      let startX = 0;
+      let startLeft = 0;
+
+      nav.addEventListener("mousedown", (event) => {
+        if (event.button !== 0) return;
+        dragging = true;
+        dragged = false;
+        startX = event.pageX;
+        startLeft = nav.scrollLeft;
+        nav.classList.add("is-dragging");
+      });
+
+      window.addEventListener("mousemove", (event) => {
+        if (!dragging) return;
+        const delta = event.pageX - startX;
+        if (Math.abs(delta) > 4) dragged = true;
+        nav.scrollLeft = startLeft - delta;
+      });
+
+      window.addEventListener("mouseup", () => {
+        dragging = false;
+        nav.classList.remove("is-dragging");
+      });
+
+      nav.addEventListener("click", (event) => {
+        if (!dragged) return;
+        event.preventDefault();
+        event.stopPropagation();
+        dragged = false;
+      }, true);
+    }
+
+    function cleanSummaryLead(text) {
+      return text
+        .replace(/^The first .*? is /, "")
+        .replace(/^The second .*? is /, "")
+        .replace(/^It is .*? because /, "")
+        .replace(/^It matters because /, "")
+        .replace(/^It attracts attention because /, "")
+        .replace(/^It draws attention because /, "")
+        .replace(/^Readers care because /, "")
+        .replace(/^Readers should watch /, "")
+        .replace(/^The next signal is /, "")
+        .replace(/^The important signals are /, "")
+        .replace(/^The bottom line is /, "")
+        .replace(/^The key point is /, "")
+        .replace(/^The .*? takeaway is /, "");
+    }
+
+    function getOriginalArticleSummary(story) {
+      return story.paragraphs && story.paragraphs.length
+        ? story.paragraphs
+        : ["RSS 설명이 없습니다. 원문 링크에서 기사를 확인하세요."];
+    }
+
+    function renderParagraph(container, text) {
+      const p = document.createElement("p");
+      // "영어 문장 (한글 번역)" 형태를 찾아 분리
+      const match = text.match(/^(.*?)\s*\(([^)]+)\)\s*$/);
+
+      if (match) {
+        p.textContent = match[1]; // 영어 문장
+        const trans = document.createElement("span");
+        trans.className = "translation";
+        trans.textContent = `(${match[2]})`; // 한글 번역
+        p.appendChild(trans);
+      } else {
+        p.textContent = text;
+      }
+      container.appendChild(p);
+    }
+
+    function makeWordsClickable(root = document.getElementById("readableContent")) {
+      const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, {
+        acceptNode(node) {
+          if (!node.nodeValue.trim()) return NodeFilter.FILTER_REJECT;
+          if (node.parentElement.closest("script, style, button")) return NodeFilter.FILTER_REJECT;
+          return NodeFilter.FILTER_ACCEPT;
+        }
+      });
+      const nodes = [];
+      while (walker.nextNode()) nodes.push(walker.currentNode);
+
+      nodes.forEach((node) => {
+        const fragment = document.createDocumentFragment();
+        node.nodeValue.split(/(\b[A-Za-z][A-Za-z'-]*\b)/g).forEach((part) => {
+          if (/^[A-Za-z][A-Za-z'-]*$/.test(part)) {
+            const button = document.createElement("button");
+            button.type = "button";
+            button.className = "lookup-word";
+            button.textContent = part;
+            button.dataset.word = part;
+            fragment.appendChild(button);
+          } else {
+            fragment.appendChild(document.createTextNode(part));
+          }
+        });
+        node.parentNode.replaceChild(fragment, node);
+      });
+    }
+
+    const storageKey = "globalBriefing.savedBriefings";
+    const refreshPeriodKey = "globalBriefing.dailyRefreshDate";
+
+    function getSavedBriefings() {
+      return JSON.parse(localStorage.getItem(storageKey) || "[]");
+    }
+
+    function setSavedBriefings(briefings) {
+      localStorage.setItem(storageKey, JSON.stringify(briefings));
+    }
+
+    function collectCurrentBriefing() {
+      const cards = [...document.querySelectorAll("#briefingView .card")].map((card) => ({
+        title: card.querySelector("h2").textContent.trim(),
+        tag: card.querySelector(".tag").textContent.trim(),
+        paragraphs: [...card.querySelectorAll(".details p")].map((paragraph) => paragraph.textContent.trim())
+      }));
+
+      return {
+        id: Date.now().toString(),
+        title: document.querySelector("h1").textContent.trim(),
+        date: document.getElementById("briefingDate").textContent.trim(),
+        savedAt: new Date().toLocaleString("en-US"),
+        cards
+      };
+    }
+
+    function saveCurrentBriefing() {
+      const briefings = getSavedBriefings();
+      const current = collectCurrentBriefing();
+      briefings.unshift(current);
+      setSavedBriefings(briefings.slice(0, 20));
+      renderSavedList();
+      document.getElementById("dictionaryText").textContent = `Saved: ${current.date}`;
+    }
+
+    function getRefreshDateKey(date = new Date()) {
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, "0");
+      const dateNumber = String(date.getDate()).padStart(2, "0");
+      return `${year}-${month}-${dateNumber}`;
+    }
+
+    function saveCurrentBriefingForAutoRefresh() {
+      const briefings = getSavedBriefings();
+      const current = collectCurrentBriefing();
+      current.savedAt = `${new Date().toLocaleString("en-US")} auto refresh`;
+      briefings.unshift(current);
+      setSavedBriefings(briefings.slice(0, 20));
+    }
+
+    function schedulePeriodRefresh() {
+      const now = new Date();
+      const next = new Date(now);
+      next.setHours(9, 0, 0, 0);
+      if (now >= next) {
+        next.setDate(next.getDate() + 1);
+      }
+
+      setTimeout(async () => {
+        const latestDate = getRefreshDateKey();
+        if (localStorage.getItem(refreshPeriodKey) !== latestDate) {
+          saveCurrentBriefingForAutoRefresh();
+          localStorage.setItem(refreshPeriodKey, latestDate);
+          location.reload();
+        }
+        schedulePeriodRefresh();
+      }, next.getTime() - now.getTime());
+    }
+
+    function showBriefingView() {
+      document.getElementById("briefingView").classList.remove("is-hidden");
+      document.getElementById("savedView").classList.remove("is-active");
+      document.getElementById("savedDetail").replaceChildren();
+    }
+
+    function showSavedView() {
+      renderSavedList();
+      document.getElementById("briefingView").classList.add("is-hidden");
+      document.getElementById("savedView").classList.add("is-active");
+    }
+
+    function renderSavedList() {
+      const savedList = document.getElementById("savedList");
+      const savedDetail = document.getElementById("savedDetail");
+      const briefings = getSavedBriefings();
+      savedList.replaceChildren();
+      savedDetail.replaceChildren();
+
+      if (!briefings.length) {
+        const empty = document.createElement("p");
+        empty.className = "saved-item";
+        empty.textContent = "No saved briefings yet.";
+        savedList.appendChild(empty);
+        makeWordsClickable(savedList);
+        return;
+      }
+
+      briefings.forEach((briefing) => {
+        const item = document.createElement("button");
+        item.type = "button";
+        item.className = "saved-item";
+        item.dataset.id = briefing.id;
+        item.textContent = `${briefing.date} - saved ${briefing.savedAt}`;
+        savedList.appendChild(item);
+      });
+    }
+
+    function renderSavedDetail(id) {
+      const savedDetail = document.getElementById("savedDetail");
+      const briefing = getSavedBriefings().find((item) => item.id === id);
+      savedDetail.replaceChildren();
+      if (!briefing) return;
+
+      briefing.cards.forEach((card) => {
+        const article = document.createElement("article");
+        article.className = "saved-card";
+
+        const head = document.createElement("div");
+        head.className = "card-head";
+
+        const title = document.createElement("h2");
+        title.textContent = card.title;
+
+        const tag = document.createElement("span");
+        tag.className = "tag";
+        tag.textContent = card.tag;
+
+        const details = document.createElement("div");
+        details.className = "details";
+
+        card.paragraphs.forEach((text) => {
+          renderParagraph(details, text);
+        });
+
+        head.append(title, tag);
+        article.append(head, details);
+        savedDetail.appendChild(article);
+      });
+
+      makeWordsClickable(savedDetail);
+    }
+
+    updateBriefingDate();
+    applyReaderSize();
+    applyReaderFont();
+    renderBriefingCards();
+    renderSectionNav();
+    initSectionNavDrag();
+    makeWordsClickable();
+    schedulePeriodRefresh();
+    initDictionary();
+    window.addEventListener("scroll", updateSectionNavForScroll, { passive: true });
+    window.addEventListener("resize", updateSectionNavForScroll);
+
+    localStorage.removeItem("globalBriefing.apiKey");
+    const cachedSections = localStorage.getItem(lastSectionsKey);
+
+    if (cachedSections) {
+      try {
+        const cached = JSON.parse(cachedSections);
+        briefingSections = cached.briefingSections;
+        briefingGeneratedAt = cached.generatedAt;
+        updateBriefingDate();
+        renderBriefingCards();
+        renderSectionNav();
+        makeWordsClickable();
+      } catch (e) {
+        console.error("Cache load failed", e);
+      }
+    }
+
+    loadBriefing();
+
+    document.getElementById("updateApiBtn").addEventListener("click", loadBriefing);
+
+    document.getElementById("settingsBtn").addEventListener("click", () => {
+      document.getElementById("settingsPanel").classList.add("is-open");
+    });
+
+    document.getElementById("readableContent").addEventListener("click", async (event) => {
+      if (!event.target.closest(".nav-actions, .settings-btn")) {
+        document.getElementById("settingsPanel").classList.remove("is-open");
+      }
+      const word = event.target.closest(".lookup-word");
+      if (!word) return;
+      const meaning = await findMeaning(word.dataset.word);
+      document.getElementById("dictionaryText").textContent = `${word.dataset.word}: ${meaning}`;
+    });
+
+    document.getElementById("saveBriefingBtn").addEventListener("click", saveCurrentBriefing);
+    document.getElementById("showSavedBtn").addEventListener("click", showSavedView);
+    document.getElementById("decreaseTextBtn").addEventListener("click", () => changeReaderSize(-0.04));
+    document.getElementById("increaseTextBtn").addEventListener("click", () => changeReaderSize(0.04));
+    document.getElementById("fontCycleBtn").addEventListener("click", cycleReaderFont);
+    document.getElementById("backToBriefingBtn").addEventListener("click", showBriefingView);
+    document.getElementById("savedList").addEventListener("click", (event) => {
+      const item = event.target.closest(".saved-item[data-id]");
+      if (!item) return;
+      renderSavedDetail(item.dataset.id);
+    });
+    document.getElementById("syncDictBtn").addEventListener("click", () => {
+      const url = document.getElementById("dictUrlInput").value.trim();
+      if (url) syncDictionary(url);
+    });
+
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js')
+          .then(reg => console.log('SW Registered', reg))
+          .catch(err => console.error('SW Registration failed', err));
+      });
+    }
+
+    setInterval(updateBriefingDate, 60 * 60 * 1000);
+  </script>
+</body>
+</html>
