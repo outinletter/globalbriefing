@@ -72,8 +72,7 @@ final class BriefingController: UIViewController, WKNavigationDelegate, WKScript
                 UIAction(title: "설정 · 개인정보 · 지원", image: UIImage(systemName: "gearshape")) { [weak self] _ in
                     self?.navigationController?.pushViewController(AppSettingsController(style: .insetGrouped), animated: true)
                 }
-            ])),
-            UIBarButtonItem(title: "영한사전", style: .plain, target: self, action: #selector(openDictionary))
+            ]))
         ]
         webView.load(URLRequest(url: readerURL))
     }
@@ -86,16 +85,6 @@ final class BriefingController: UIViewController, WKNavigationDelegate, WKScript
         let sheet = UIActivityViewController(activityItems: [home], applicationActivities: nil)
         sheet.popoverPresentationController?.barButtonItem = navigationItem.rightBarButtonItems?.first
         present(sheet, animated: true)
-    }
-
-    @objc private func openDictionary() {
-        guard let dictionary else {
-            let alert = UIAlertController(title: "사전 오류", message: "내장 사전을 불러오지 못했습니다.", preferredStyle: .alert)
-            alert.addAction(UIAlertAction(title: "닫기", style: .cancel))
-            present(alert, animated: true)
-            return
-        }
-        navigationController?.pushViewController(DictionaryController(dictionary: dictionary), animated: true)
     }
 
     func userContentController(_ userContentController: WKUserContentController, didReceive message: WKScriptMessage) {
