@@ -507,13 +507,6 @@
           </div>
           <p id="apiUpdateMsg" style="margin: 0; font-family: Arial, sans-serif; font-size: 0.6rem; color: var(--muted); display: none;"></p>
         </div>
-        <div id="dictSyncArea" style="display: flex; flex-direction: column; gap: 4px; margin-top: 6px; width: 100%; border-top: 1px solid var(--accent-soft); padding-top: 6px;">
-          <p style="margin: 0; font-family: Arial, sans-serif; font-size: 0.65rem; font-weight: 800; text-transform: uppercase;">Dictionary Sync</p>
-          <div style="display: flex; gap: 4px; align-items: center;">
-            <input type="text" id="dictUrlInput" placeholder="GitHub dictionary.json URL" aria-label="Dictionary URL" style="flex: 1; font-family: Arial, Helvetica, sans-serif; font-size: 0.65rem; padding: 4px 6px; border: 1px solid var(--line); background: var(--card); color: var(--text);" />
-            <button type="button" id="syncDictBtn" style="font-family: Arial, Helvetica, sans-serif; font-size: 0.65rem; font-weight: 800; padding: 4px 6px; border: 1px solid var(--line); background: var(--text); color: var(--bg); text-transform: uppercase; cursor: pointer; white-space: nowrap;">동기화</button>
-          </div>
-        </div>
       </div>
       <button class="action-btn settings-btn" id="settingsBtn" type="button" aria-label="Open settings">
         <svg viewBox="0 0 24 24" aria-hidden="true">
@@ -606,30 +599,10 @@
       });
     }
 
-    const dictUrlKey = "globalBriefing.dictUrl";
-
-    async function syncDictionary(url) {
-      try {
-        document.getElementById("dictionaryText").textContent = "사전 데이터를 동기화 중입니다...";
-        const response = await fetch(url);
-        if (!response.ok) throw new Error("파일을 불러오지 못했습니다.");
-        const data = await response.json();
-
-        await saveWordsToDB(data);
-        fallbackDictionary = data;
-        localStorage.setItem(dictUrlKey, url);
-        document.getElementById("dictionaryText").textContent = `동기화 완료: ${Object.keys(data).length} 단어 저장됨.`;
-      } catch (error) {
-        console.error("Sync Error:", error);
-        document.getElementById("dictionaryText").textContent = `동기화 실패: ${error.message}`;
-      }
-    }
-
     async function initDictionary() {
       try {
         await openDB();
 
-        const customUrl = localStorage.getItem(dictUrlKey);
         const response = await fetch("dictionary.json");
 
         if (response.ok) {
@@ -646,10 +619,6 @@
           }
         }
 
-        if (customUrl) {
-          document.getElementById("dictUrlInput").value = customUrl;
-          // 백그라운드에서 최신 버전 확인 가능하나 일단 초기화는 로컬 캐시 우선
-        }
       } catch (error) {
         console.error("사전 초기화 오류:", error);
       }
@@ -1194,10 +1163,6 @@
       const item = event.target.closest(".saved-item[data-id]");
       if (!item) return;
       renderSavedDetail(item.dataset.id);
-    });
-    document.getElementById("syncDictBtn").addEventListener("click", () => {
-      const url = document.getElementById("dictUrlInput").value.trim();
-      if (url) syncDictionary(url);
     });
 
     if ('serviceWorker' in navigator) {
